@@ -1,0 +1,25 @@
+{
+	"name" : "staccato/list-loader",
+	"description" : "Staccato list loader component",
+	"type" : "library",
+	"license" : "MIT",
+	"authors" : [{
+			"name" : "Krystian Karaś",
+			"email" : "dev@karashome.pl"
+		}
+	],
+	"require" : {
+		"php" : ">=7.0",
+		"symfony/http-foundation" : "^3.1"
+	},
+	"autoload" : {
+		"psr-4" : {
+			"Staccato\\Component\\ListLoader\\" : "src/"
+		}
+	},
+	"autoload-dev" : {
+		"psr-4" : {
+			"Staccato\\Component\\ListLoader\\Tests\\" : "tests/"
+		}
+	}
+}
