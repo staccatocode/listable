@@ -18,7 +18,7 @@ trait ListableBehavior
 {
     /**
      * Create ListableRepository based on this repository.
-     * 
+     *
      * @return ListableRepository
      */
     public function createList(): ListableRepository
@@ -28,7 +28,7 @@ trait ListableBehavior
 
     /**
      * Create new instance of QueryBuilder.
-     * 
+     *
      * @return QueryBuilder
      */
     protected function createListableQueryBuilder(): QueryBuilder
@@ -38,7 +38,7 @@ trait ListableBehavior
 
     /**
      * Set conditions on QueryBilder by filters.
-     * 
+     *
      * @param QueryBuilder $qb
      * @param array        $filters
      */
@@ -49,7 +49,7 @@ trait ListableBehavior
 
     /**
      * Set sorting on QueryBilder.
-     * 
+     *
      * @param QueryBuilder $qb
      * @param string|null  $name
      * @param string       $type
@@ -61,10 +61,10 @@ trait ListableBehavior
 
     /**
      * Check if column prefix exists and append if not.
-     * 
+     *
      * @param QueryBuilder $qb
      * @param string       $columnName
-     * 
+     *
      * @return string
      */
     protected function columnPrefix(QueryBuilder $qb, $columnName)
@@ -78,14 +78,15 @@ trait ListableBehavior
 
     /**
      * Set order on QueryBuilder.
-     * 
+     *
      * @param QueryBuilder $qb
      * @param string       $columnName column name
      * @param string       $type       type of sort (asc or desc)
-     * 
+     * @param bool         $add        add order
+     *
      * @return self
      */
-    protected function orderBy(QueryBuilder $qb, $columnName, $type)
+    protected function orderBy(QueryBuilder $qb, $columnName, $type, $add = false)
     {
         $type = strtoupper($type);
 
@@ -93,7 +94,9 @@ trait ListableBehavior
             $type = 'ASC';
         }
 
-        $qb->orderBy($this->columnPrefix($qb, $columnName), $type);
+        $orderBy = $add ? 'addOrderBy' : 'orderBy';
+
+        $qb->$orderBy($this->columnPrefix($qb, $columnName), $type);
 
         return $this;
     }
@@ -186,11 +189,11 @@ trait ListableBehavior
 
     /**
      * Alias for greaterThan.
-     * 
+     *
      * @param QueryBuilder $qb
      * @param string       $columnName
      * @param mixed        $value
-     * 
+     *
      * @return self
      */
     protected function andGreaterThan(QueryBuilder $qb, $columnName, $value)
@@ -204,7 +207,7 @@ trait ListableBehavior
      * @param QueryBuilder $qb
      * @param string       $columnName
      * @param mixed        $value
-     * 
+     *
      * @return self
      */
     protected function orGreaterThan(QueryBuilder $qb, $columnName, $value)
