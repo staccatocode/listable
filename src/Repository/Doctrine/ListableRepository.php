@@ -27,7 +27,7 @@ class ListableRepository extends BaseListableRepository
     }
 
     /**
-     * {inheritdoc}.
+     * {@inheritdoc}
      */
     public function find($limit = 0, $page = 0)
     {
@@ -37,7 +37,7 @@ class ListableRepository extends BaseListableRepository
         $page = intval($page);
         $page = $page > 0 ? $page : 0;
 
-        $qb = $this->prepareQueryBuilder();
+        $qb = $this->prepareQueryBuilder(true, true);
 
         if ($limit > 0) {
             $qb->setMaxResults($limit)
@@ -50,11 +50,11 @@ class ListableRepository extends BaseListableRepository
     }
 
     /**
-     * {inheritdoc}.
+     * {@inheritdoc}
      */
     public function count()
     {
-        $qb = $this->prepareQueryBuilder();
+        $qb = $this->prepareQueryBuilder(true, false);
         $qb->select(sprintf('COUNT(%s)', $qb->getRootAliases()[0]));
 
         $count = $qb->getQuery()->getSingleScalarResult();
@@ -64,20 +64,27 @@ class ListableRepository extends BaseListableRepository
 
     /**
      * Prepare query builder.
-     * 
+     *
+     * @param bool $includeFilters
+     * @param bool $includeSorter
+     *
      * @return \Doctrine\ORM\QueryBuilder
      */
-    protected function prepareQueryBuilder()
+    protected function prepareQueryBuilder($includeFilters = true, $includeSorter = true)
     {
-        $qbSetter = function ($filters, $sorter) {
+        $qbSetter = function ($filters, $sorter, $includeFilters, $includeSorter) {
             $qb = $this->createListableQueryBuilder();
 
-            $this->setQueryBuilderFilters($qb, $filters);
-            $this->setQueryBuilderSorter($qb, $sorter['name'], $sorter['type']);
+            if ($includeFilters) {
+                $this->setQueryBuilderFilters($qb, $filters);
+            }
+            if ($includeSorter) {
+                $this->setQueryBuilderSorter($qb, $sorter['name'], $sorter['type']);
+            }
 
             return $qb;
         };
 
-        return $qbSetter->call($this->repository, $this->filters, $this->sorter);
+        return $qbSetter->call($this->repository, $this->filters, $this->sorter, $includeFilters, $includeSorter);
     }
 }

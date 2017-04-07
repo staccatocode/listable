@@ -38,17 +38,17 @@ abstract class ListableRepository
 
     /**
      * Count number of matching objects.
-     * 
+     *
      * @return int
      */
     abstract public function count();
 
     /**
      * Set new filter.
-     * 
+     *
      * @param unknown $name
      * @param unknown $value
-     * 
+     *
      * @return self
      */
     public function filterBy($name, $value)
@@ -60,9 +60,9 @@ abstract class ListableRepository
 
     /**
      * Set filters.
-     * 
+     *
      * @param array $filters
-     * 
+     *
      * @return self
      */
     public function setFilters(array $filters)
@@ -76,10 +76,10 @@ abstract class ListableRepository
 
     /**
      * Order list.
-     * 
+     *
      * @param string|null $name sorter name
      * @param string      $type asc or desc
-     * 
+     *
      * @return ListableRepository
      */
     public function orderBy($name, $type)
