@@ -45,7 +45,7 @@ class ListableRepository extends BaseListableRepository
         }
 
         $result = $qb->getQuery()->getResult();
-
+        
         return $result;
     }
 
@@ -59,7 +59,7 @@ class ListableRepository extends BaseListableRepository
 
         $count = $qb->getQuery()->getSingleScalarResult();
 
-        return $count ? $count : 0;
+        return $count ? (integer)$count : 0;
     }
 
     /**
