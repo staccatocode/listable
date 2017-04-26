@@ -169,20 +169,51 @@ trait ListableBehavior
 
     protected function dateRange($qb, $columnName, $dateOrRange)
     {
-        if (is_string($dateOrRange)) {
+        if (is_array($dateOrRange))
+        {
+            if (isset($dateOrRange['from']) && is_string($dateOrRange['from'])) 
+            {
+                try {
+                    $dateOrRange['from'] = new \DateTime($dateOrRange['from']);
+                } catch (\Exception $e) {
+                    unset($dateOrRange['from']);
+                }
+            }
+            
+            if (isset($dateOrRange['to']) && is_string($dateOrRange['to'])) 
+            {
+                try {
+                    $dateOrRange['to'] = new \DateTime($dateOrRange['to']);
+                } catch (\Exception $e) {
+                    unset($dateOrRange['to']);
+                }
+            }
+        }
+        else if (is_string($dateOrRange)) {
+            try {
+                $dateOrRange = new \DateTime($dateOrRange);
+            } catch (\Exception $e) {
+                $dateOrRange = null;
+            }
+        }
+        else {
+            $dateOrRange = null;
+        }
+        
+        if ($dateOrRange instanceof \DateTime) {
             $dateOrRange = array(
-                'from' => $dateOrRange.' 00:00:00',
-                'to' => $dateOrRange.' 23:59:59',
+                'from' => $dateOrRange,
+                'to' => $dateOrRange
             );
         }
-
+        
         if (is_array($dateOrRange)) {
-            if (isset($dateOrRange['from']) && is_string($dateOrRange['from'])) {
-                $this->andGreaterThanEqual($qb, $columnName, $dateOrRange['from'].' 00:00:00');
+            if (isset($dateOrRange['from']) && $dateOrRange['from'] instanceof \DateTime) {
+                $this->andGreaterThanEqual($qb, $columnName, $dateOrRange['from']->format('Y-m-d').' 00:00:00');
             }
 
-            if (isset($dateOrRange['to']) && is_string($dateOrRange['to'])) {
-                $this->andLessThanEqual($qb, $columnName, $dateOrRange['to'].' 23:59:59');
+            if (isset($dateOrRange['to']) && $dateOrRange['to'] instanceof \DateTime) {
+                $this->andLessThanEqual($qb, $columnName, $dateOrRange['to']->format('Y-m-d').' 23:59:59');
             }
         }
     }
