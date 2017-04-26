@@ -169,44 +169,39 @@ trait ListableBehavior
 
     protected function dateRange($qb, $columnName, $dateOrRange)
     {
-        if (is_array($dateOrRange))
-        {
-            if (isset($dateOrRange['from']) && is_string($dateOrRange['from'])) 
-            {
+        if (is_array($dateOrRange)) {
+            if (isset($dateOrRange['from']) && is_string($dateOrRange['from'])) {
                 try {
                     $dateOrRange['from'] = new \DateTime($dateOrRange['from']);
                 } catch (\Exception $e) {
                     unset($dateOrRange['from']);
                 }
             }
-            
-            if (isset($dateOrRange['to']) && is_string($dateOrRange['to'])) 
-            {
+
+            if (isset($dateOrRange['to']) && is_string($dateOrRange['to'])) {
                 try {
                     $dateOrRange['to'] = new \DateTime($dateOrRange['to']);
                 } catch (\Exception $e) {
                     unset($dateOrRange['to']);
                 }
             }
-        }
-        else if (is_string($dateOrRange)) {
+        } elseif (is_string($dateOrRange)) {
             try {
                 $dateOrRange = new \DateTime($dateOrRange);
             } catch (\Exception $e) {
                 $dateOrRange = null;
             }
-        }
-        else {
+        } else {
             $dateOrRange = null;
         }
-        
+
         if ($dateOrRange instanceof \DateTime) {
             $dateOrRange = array(
                 'from' => $dateOrRange,
-                'to' => $dateOrRange
+                'to' => $dateOrRange,
             );
         }
-        
+
         if (is_array($dateOrRange)) {
             if (isset($dateOrRange['from']) && $dateOrRange['from'] instanceof \DateTime) {
                 $this->andGreaterThanEqual($qb, $columnName, $dateOrRange['from']->format('Y-m-d').' 00:00:00');
