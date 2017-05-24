@@ -12,6 +12,7 @@
 namespace Staccato\Component\ListLoader\Repository\Doctrine;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Staccato\Component\ListLoader\Repository\ListableRepository as BaseListableRepository;
 
 class ListableRepository extends BaseListableRepository
@@ -55,11 +56,23 @@ class ListableRepository extends BaseListableRepository
     public function count()
     {
         $qb = $this->prepareQueryBuilder(true, false);
-        $qb->select(sprintf('COUNT(%s)', $qb->getRootAliases()[0]));
 
-        $count = $qb->getQuery()->getSingleScalarResult();
+        $counter = function ($qb) {
+            $resultSetMapping = new ResultSetMapping();
+            $resultSetMapping->addScalarResult('COUNT(*)', 'count');
 
-        return $count ? (int) $count : 0;
+            $query = $this->getEntityManager()->createNativeQuery(
+                sprintf('SELECT COUNT(*) FROM (%s) counter', $qb->getQuery()->getSql()),
+                $resultSetMapping
+            );
+
+            $count = $query->getSingleScalarResult();
+            $count = $count ? (int) $count : 0;
+
+            return $count;
+        };
+
+        return $counter->call($this->repository, $qb);
     }
 
     /**
