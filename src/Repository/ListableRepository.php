@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Staccato\Component\ListLoader\Repository;
+namespace Staccato\Component\Listable\Repository;
 
 abstract class ListableRepository
 {

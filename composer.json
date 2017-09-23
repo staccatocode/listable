@@ -1,6 +1,6 @@
 {
-	"name" : "staccato/list-loader",
-	"description" : "Staccato list loader component",
+	"name" : "staccato/listable",
+	"description" : "Staccato listable component",
 	"type" : "library",
 	"license" : "MIT",
 	"authors" : [{
@@ -14,12 +14,12 @@
 	},
 	"autoload" : {
 		"psr-4" : {
-			"Staccato\\Component\\ListLoader\\" : "src/"
+			"Staccato\\Component\\Listable\\" : "src/"
 		}
 	},
 	"autoload-dev" : {
 		"psr-4" : {
-			"Staccato\\Component\\ListLoader\\Tests\\" : "tests/"
+			"Staccato\\Component\\Listable\\Tests\\" : "tests/"
 		}
 	}
 }

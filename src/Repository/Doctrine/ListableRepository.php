@@ -9,11 +9,11 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Staccato\Component\ListLoader\Repository\Doctrine;
+namespace Staccato\Component\Listable\Repository\Doctrine;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query\ResultSetMapping;
-use Staccato\Component\ListLoader\Repository\ListableRepository as BaseListableRepository;
+use Staccato\Component\Listable\Repository\ListableRepository as BaseListableRepository;
 
 class ListableRepository extends BaseListableRepository
 {

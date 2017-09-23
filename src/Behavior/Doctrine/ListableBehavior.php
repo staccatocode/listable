@@ -9,10 +9,10 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Staccato\Component\ListLoader\Behavior\Doctrine;
+namespace Staccato\Component\Listable\Behavior\Doctrine;
 
 use Doctrine\ORM\QueryBuilder;
-use Staccato\Component\ListLoader\Repository\Doctrine\ListableRepository;
+use Staccato\Component\Listable\Repository\Doctrine\ListableRepository;
 
 trait ListableBehavior
 {
