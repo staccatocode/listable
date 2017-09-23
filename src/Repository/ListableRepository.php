@@ -14,6 +14,13 @@ namespace Staccato\Component\ListLoader\Repository;
 abstract class ListableRepository
 {
     /**
+     * Ordering constant definitions.
+     */
+    const ORDER_ASC = 'asc';
+
+    const ORDER_DESC = 'desc';
+
+    /**
      * @var array
      */
     protected $filters = array();
@@ -23,35 +30,35 @@ abstract class ListableRepository
      */
     protected $sorter = array(
         'name' => null,
-        'type' => 'asc',
+        'type' => self::ORDER_ASC,
     );
 
     /**
      * Find matching objects and compose list.
      *
-     * @param number $limit limit of objects per page (0 = no limit)
-     * @param number $page  find page
+     * @param int $limit limit of objects per page (0 = no limit)
+     * @param int $page  find page
      *
      * @return mixed result set
      */
-    abstract public function find($limit = 0, $page = 0);
+    abstract public function find(int $limit = 0, int $page = 0);
 
     /**
      * Count number of matching objects.
      *
      * @return int
      */
-    abstract public function count();
+    abstract public function count(): int;
 
     /**
-     * Set new filter.
+     * Set new list filter.
      *
-     * @param unknown $name
-     * @param unknown $value
+     * @param string $name
+     * @param mixed  $value
      *
-     * @return self
+     * @return ListableRepository self
      */
-    public function filterBy($name, $value)
+    public function filterBy(string $name, $value): ListableRepository
     {
         $this->filters[$name] = $value;
 
@@ -59,13 +66,13 @@ abstract class ListableRepository
     }
 
     /**
-     * Set filters.
+     * Set list filters.
      *
      * @param array $filters
      *
-     * @return self
+     * @return ListableRepository self
      */
-    public function setFilters(array $filters)
+    public function setFilters(array $filters): ListableRepository
     {
         foreach ($filters as $f => $v) {
             $this->filterBy($f, $v);
@@ -75,14 +82,14 @@ abstract class ListableRepository
     }
 
     /**
-     * Order list.
+     * Set list ordering.
      *
-     * @param string|null $name sorter name
-     * @param string      $type asc or desc
+     * @param string|null $name sorter name or null to disable
+     * @param string      $type `asc` or `desc`
      *
-     * @return ListableRepository
+     * @return ListableRepository self
      */
-    public function orderBy($name, $type)
+    public function orderBy(?string $name, string $type = self::ORDER_ASC): ListableRepository
     {
         $this->sorter['name'] = $name;
         $this->sorter['type'] = $type;

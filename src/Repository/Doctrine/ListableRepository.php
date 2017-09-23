@@ -30,12 +30,12 @@ class ListableRepository extends BaseListableRepository
     /**
      * {@inheritdoc}
      */
-    public function find($limit = 0, $page = 0)
+    public function find(int $limit = 0, int $page = 0)
     {
-        $limit = intval($limit);
+        $limit = (int) $limit;
         $limit = $limit > 0 ? $limit : 0;
 
-        $page = intval($page);
+        $page = (int) $page;
         $page = $page > 0 ? $page : 0;
 
         $qb = $this->prepareQueryBuilder(true, true);
@@ -53,7 +53,7 @@ class ListableRepository extends BaseListableRepository
     /**
      * {@inheritdoc}
      */
-    public function count()
+    public function count(): int
     {
         $qb = $this->prepareQueryBuilder(true, false);
 
@@ -62,24 +62,26 @@ class ListableRepository extends BaseListableRepository
             $resultSetMapping->addScalarResult('COUNT(*)', 'count');
 
             $query = $this->getEntityManager()->createNativeQuery(
+                // TODO: subquery can be unoptimised for simpler queries,
+                // though it's probably the only option for those complex.
                 sprintf('SELECT COUNT(*) FROM (%s) counter', $qb->getQuery()->getSql()),
                 $resultSetMapping
             );
 
             $count = $query->getSingleScalarResult();
-            $count = $count ? (int) $count : 0;
+            $count = $count ? $count : 0;
 
-            return $count;
+            return (int) $count;
         };
 
         return $counter->call($this->repository, $qb);
     }
 
     /**
-     * Prepare query builder.
+     * Create QueryBuilder and applay filters and/or sorter.
      *
-     * @param bool $includeFilters
-     * @param bool $includeSorter
+     * @param bool $includeFilters apply filters if true
+     * @param bool $includeSorter  apply sorter if true
      *
      * @return \Doctrine\ORM\QueryBuilder
      */

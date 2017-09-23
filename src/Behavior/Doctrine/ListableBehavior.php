@@ -37,7 +37,7 @@ trait ListableBehavior
     }
 
     /**
-     * Set conditions on QueryBilder by filters.
+     * Set filters on QueryBuilder.
      *
      * @param QueryBuilder $qb
      * @param array        $filters
@@ -51,33 +51,33 @@ trait ListableBehavior
      * Set sorting on QueryBilder.
      *
      * @param QueryBuilder $qb
-     * @param string|null  $name
-     * @param string       $type
+     * @param string|null  $name sorter name
+     * @param string       $type sorter type `asc` ir `desc`
      */
-    protected function setQueryBuilderSorter(QueryBuilder $qb, $name, $type): void
+    protected function setQueryBuilderSorter(QueryBuilder $qb, ?string $name, string $type): void
     {
         // Should be overriden in repository
     }
 
     /**
-     * Check if column prefix exists and append if not.
+     * Ensure column prefix exists and append if not.
      *
      * @param QueryBuilder $qb
      * @param string       $columnName
      *
-     * @return string
+     * @return string column name with prefix
      */
-    protected function columnPrefix(QueryBuilder $qb, $columnName)
+    protected function columnPrefix(QueryBuilder $qb, string $columnName): string
     {
-        if (false === strstr($columnName, '.')) {
+        if (false === strpos($columnName, '.')) {
             $columnName = $qb->getRootAliases()[0].'.'.$columnName;
         }
 
-        return $columnName;
+        return (string) $columnName;
     }
 
     /**
-     * Set order on QueryBuilder.
+     * Apply ordering on QueryBuilder.
      *
      * @param QueryBuilder $qb
      * @param string       $columnName column name
@@ -86,11 +86,11 @@ trait ListableBehavior
      *
      * @return self
      */
-    protected function orderBy(QueryBuilder $qb, $columnName, $type, $add = false)
+    protected function orderBy(QueryBuilder $qb, string $columnName, string $type, bool $add = false)
     {
         $type = strtoupper($type);
 
-        if ($type !== 'ASC' && $type !== 'DESC') {
+        if ('ASC' !== $type && 'DESC' !== $type) {
             $type = 'ASC';
         }
 
@@ -101,7 +101,18 @@ trait ListableBehavior
         return $this;
     }
 
-    protected function like(QueryBuilder $qb, $columnName, $value, $or = false, $not = false)
+    /**
+     * Apply like filter on QueryBuilder.
+     *
+     * @param QueryBuilder $qb
+     * @param string       $columnName
+     * @param mixed        $value
+     * @param bool         $or         append as or/and
+     * @param bool         $not        append as not like
+     *
+     * @return self
+     */
+    protected function like(QueryBuilder $qb, string $columnName, $value, bool $or = false, bool $not = false)
     {
         $where = $or ? 'orWhere' : 'andWhere';
         $like = $not ? 'notLike' : 'like';
@@ -116,7 +127,18 @@ trait ListableBehavior
         return $this;
     }
 
-    protected function equal(QueryBuilder $qb, $columnName, $value, $or = false, $not = false)
+    /**
+     * Apply equal filter on QueryBuilder.
+     *
+     * @param QueryBuilder $qb
+     * @param string       $columnName
+     * @param mixed        $value
+     * @param bool         $or         append as or/and
+     * @param bool         $not        append as not like
+     *
+     * @return self
+     */
+    protected function equal(QueryBuilder $qb, string $columnName, $value, bool $or = false, bool $not = false)
     {
         $where = $or ? 'orWhere' : 'andWhere';
 
@@ -137,7 +159,18 @@ trait ListableBehavior
         return $this;
     }
 
-    protected function greaterThan(QueryBuilder $qb, $columnName, $value, $or = false, $equal = false)
+    /**
+     * Apply comparission filter on QueryBuilder.
+     *
+     * @param QueryBuilder $qb
+     * @param string       $columnName
+     * @param mixed        $value
+     * @param bool         $or         append as or/and
+     * @param bool         $equal      qreater-equal or greater
+     *
+     * @return self
+     */
+    protected function greaterThan(QueryBuilder $qb, $columnName, $value, bool $or = false, bool $equal = false)
     {
         $where = $or ? 'orWhere' : 'andWhere';
         $cmp = $equal ? 'gte' : 'gt';
@@ -152,6 +185,17 @@ trait ListableBehavior
         return $this;
     }
 
+    /**
+     * Apply comparission filter on QueryBuilder.
+     *
+     * @param QueryBuilder $qb
+     * @param string       $columnName
+     * @param mixed        $value
+     * @param bool         $or         append as or/and
+     * @param bool         $equal      less-equal or less
+     *
+     * @return self
+     */
     protected function lessThan(QueryBuilder $qb, $columnName, $value, $or = false, $equal = false)
     {
         $where = $or ? 'orWhere' : 'andWhere';
@@ -167,6 +211,16 @@ trait ListableBehavior
         return $this;
     }
 
+    /**
+     * Apply date filter on QueryBuilder.
+     *
+     * @param QueryBuilder $qb
+     * @param string       $columnName
+     * @param mixed        $dateOrRange optionally array with from/to keys
+     *                                  and string or \DateTime as value
+     *
+     * @return self
+     */
     protected function dateRange($qb, $columnName, $dateOrRange)
     {
         if (is_array($dateOrRange)) {
@@ -211,6 +265,8 @@ trait ListableBehavior
                 $this->andLessThanEqual($qb, $columnName, $dateOrRange['to']->format('Y-m-d').' 23:59:59');
             }
         }
+
+        return $this;
     }
 
     /**
@@ -222,7 +278,7 @@ trait ListableBehavior
      *
      * @return self
      */
-    protected function andGreaterThan(QueryBuilder $qb, $columnName, $value)
+    protected function andGreaterThan(QueryBuilder $qb, string $columnName, $value)
     {
         return $this->greaterThan($qb, $columnName, $value, false, false);
     }
@@ -236,7 +292,7 @@ trait ListableBehavior
      *
      * @return self
      */
-    protected function orGreaterThan(QueryBuilder $qb, $columnName, $value)
+    protected function orGreaterThan(QueryBuilder $qb, string $columnName, $value)
     {
         return $this->greaterThan($qb, $columnName, $value, true, false);
     }
@@ -250,7 +306,7 @@ trait ListableBehavior
      *
      * @return self
      */
-    protected function andGreaterThanEqual(QueryBuilder $qb, $columnName, $value)
+    protected function andGreaterThanEqual(QueryBuilder $qb, string $columnName, $value)
     {
         return $this->greaterThan($qb, $columnName, $value, false, true);
     }
@@ -264,7 +320,7 @@ trait ListableBehavior
      *
      * @return self
      */
-    protected function orGreaterThanEqual(QueryBuilder $qb, $columnName, $value)
+    protected function orGreaterThanEqual(QueryBuilder $qb, string $columnName, $value)
     {
         return $this->greaterThan($qb, $columnName, $value, true, true);
     }
@@ -278,7 +334,7 @@ trait ListableBehavior
      *
      * @return self
      */
-    protected function andLessThan(QueryBuilder $qb, $columnName, $value)
+    protected function andLessThan(QueryBuilder $qb, string $columnName, $value)
     {
         return $this->lessThan($qb, $columnName, $value, false, false);
     }
@@ -292,7 +348,7 @@ trait ListableBehavior
      *
      * @return self
      */
-    protected function orLessThan(QueryBuilder $qb, $columnName, $value)
+    protected function orLessThan(QueryBuilder $qb, string $columnName, $value)
     {
         return $this->lessThan($qb, $columnName, $value, true, false);
     }
@@ -306,7 +362,7 @@ trait ListableBehavior
      *
      * @return self
      */
-    protected function andLessThanEqual(QueryBuilder $qb, $columnName, $value)
+    protected function andLessThanEqual(QueryBuilder $qb, string $columnName, $value)
     {
         return $this->lessThan($qb, $columnName, $value, false, true);
     }
@@ -320,7 +376,7 @@ trait ListableBehavior
      *
      * @return self
      */
-    protected function orLessThanEqual(QueryBuilder $qb, $columnName, $value)
+    protected function orLessThanEqual(QueryBuilder $qb, string $columnName, $value)
     {
         return $this->lessThan($qb, $columnName, $value, true, true);
     }
@@ -334,7 +390,7 @@ trait ListableBehavior
      *
      * @return self
      */
-    protected function andLike(QueryBuilder $qb, $columnName, $value)
+    protected function andLike(QueryBuilder $qb, string $columnName, $value)
     {
         return $this->like($qb, $columnName, $value, false, false);
     }
@@ -348,7 +404,7 @@ trait ListableBehavior
      *
      * @return self
      */
-    protected function orLike(QueryBuilder $qb, $columnName, $value)
+    protected function orLike(QueryBuilder $qb, string $columnName, $value)
     {
         return $this->like($qb, $columnName, $value, true, false);
     }
@@ -362,7 +418,7 @@ trait ListableBehavior
      *
      * @return self
      */
-    protected function andNotLike(QueryBuilder $qb, $columnName, $value)
+    protected function andNotLike(QueryBuilder $qb, string $columnName, $value)
     {
         return $this->like($qb, $columnName, $value, false, true);
     }
@@ -376,7 +432,7 @@ trait ListableBehavior
      *
      * @return self
      */
-    protected function orNotLike(QueryBuilder $qb, $columnName, $value)
+    protected function orNotLike(QueryBuilder $qb, string $columnName, $value)
     {
         return $this->like($qb, $columnName, $value, true, true);
     }
@@ -390,7 +446,7 @@ trait ListableBehavior
      *
      * @return self
      */
-    protected function andEqual(QueryBuilder $qb, $columnName, $value)
+    protected function andEqual(QueryBuilder $qb, string $columnName, $value)
     {
         return $this->equal($qb, $columnName, $value, false, false);
     }
@@ -404,7 +460,7 @@ trait ListableBehavior
      *
      * @return self
      */
-    protected function orEqual(QueryBuilder $qb, $columnName, $value)
+    protected function orEqual(QueryBuilder $qb, string $columnName, $value)
     {
         return $this->equal($qb, $columnName, $value, true, false);
     }
@@ -418,7 +474,7 @@ trait ListableBehavior
      *
      * @return self
      */
-    protected function andNotEqual(QueryBuilder $qb, $columnName, $value)
+    protected function andNotEqual(QueryBuilder $qb, string $columnName, $value)
     {
         return $this->equal($qb, $columnName, $value, false, true);
     }
@@ -432,7 +488,7 @@ trait ListableBehavior
      *
      * @return self
      */
-    protected function orNotEqual(QueryBuilder $qb, $columnName, $value)
+    protected function orNotEqual(QueryBuilder $qb, string $columnName, $value)
     {
         return $this->equal($qb, $columnName, $value, true, true);
     }
