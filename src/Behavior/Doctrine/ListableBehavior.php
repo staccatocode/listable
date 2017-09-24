@@ -170,7 +170,7 @@ trait ListableBehavior
      *
      * @return self
      */
-    protected function greaterThan(QueryBuilder $qb, $columnName, $value, bool $or = false, bool $equal = false)
+    protected function greaterThan(QueryBuilder $qb, string $columnName, $value, bool $or = false, bool $equal = false)
     {
         $where = $or ? 'orWhere' : 'andWhere';
         $cmp = $equal ? 'gte' : 'gt';
@@ -196,7 +196,7 @@ trait ListableBehavior
      *
      * @return self
      */
-    protected function lessThan(QueryBuilder $qb, $columnName, $value, $or = false, $equal = false)
+    protected function lessThan(QueryBuilder $qb, string $columnName, $value, bool $or = false, bool $equal = false)
     {
         $where = $or ? 'orWhere' : 'andWhere';
         $cmp = $equal ? 'lte' : 'lt';
@@ -221,7 +221,7 @@ trait ListableBehavior
      *
      * @return self
      */
-    protected function dateRange($qb, $columnName, $dateOrRange)
+    protected function dateRange(QueryBuilder $qb, string $columnName, $dateOrRange)
     {
         if (is_array($dateOrRange)) {
             if (isset($dateOrRange['from']) && is_string($dateOrRange['from'])) {
