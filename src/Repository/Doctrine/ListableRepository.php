@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of staccato list component
+ * This file is part of staccato listable component
  *
  * (c) Krystian Karaś <dev@karashome.pl>
  *
@@ -13,9 +13,9 @@ namespace Staccato\Component\Listable\Repository\Doctrine;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query\ResultSetMapping;
-use Staccato\Component\Listable\Repository\ListableRepository as BaseListableRepository;
+use Staccato\Component\Listable\Repository\AbstractRepository;
 
-class ListableRepository extends BaseListableRepository
+class ListableRepository extends AbstractRepository
 {
     /**
      * @var EntityRepository

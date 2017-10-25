@@ -1,7 +1,7 @@
 <?php
 
 $header = <<<'EOF'
-This file is part of staccato list component
+This file is part of staccato listable component
 
 (c) Krystian Karaś <dev@karashome.pl>
 
@@ -14,8 +14,8 @@ return PhpCsFixer\Config::create()
     ->setRules(array(
         '@Symfony' => true,
         '@Symfony:risky' => true,
-        'combine_consecutive_unsets' => true,
         'header_comment' => array('header' => $header),
+        'combine_consecutive_unsets' => true,
         'array_syntax' => array('syntax' => 'long'),
         'no_extra_consecutive_blank_lines' => array('break', 'continue', 'extra', 'return', 'throw', 'use', 'parenthesis_brace_block', 'square_brace_block', 'curly_brace_block'),
         'no_useless_else' => true,
@@ -24,8 +24,8 @@ return PhpCsFixer\Config::create()
         'ordered_imports' => true,
         'php_unit_strict' => true,
         'psr4' => true,
-        'strict_comparison' => true,
-		'strict_param' => true,
+        'strict_comparison' => false,
+		'strict_param' => false,
     ))
     ->setFinder(
         PhpCsFixer\Finder::create()

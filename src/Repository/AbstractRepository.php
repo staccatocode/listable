@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of staccato list component
+ * This file is part of staccato listable component
  *
  * (c) Krystian Karaś <dev@karashome.pl>
  *
@@ -11,7 +11,7 @@
 
 namespace Staccato\Component\Listable\Repository;
 
-abstract class ListableRepository
+abstract class AbstractRepository
 {
     /**
      * Ordering constant definitions.
@@ -56,9 +56,9 @@ abstract class ListableRepository
      * @param string $name
      * @param mixed  $value
      *
-     * @return ListableRepository self
+     * @return AbstractRepository self
      */
-    public function filterBy(string $name, $value): ListableRepository
+    public function filterBy(string $name, $value): AbstractRepository
     {
         $this->filters[$name] = $value;
 
@@ -70,9 +70,9 @@ abstract class ListableRepository
      *
      * @param array $filters
      *
-     * @return ListableRepository self
+     * @return AbstractRepository self
      */
-    public function setFilters(array $filters): ListableRepository
+    public function setFilters(array $filters): AbstractRepository
     {
         foreach ($filters as $f => $v) {
             $this->filterBy($f, $v);
@@ -87,9 +87,9 @@ abstract class ListableRepository
      * @param string|null $name sorter name or null to disable
      * @param string      $type `asc` or `desc`
      *
-     * @return ListableRepository self
+     * @return AbstractRepository self
      */
-    public function orderBy(?string $name, string $type = self::ORDER_ASC): ListableRepository
+    public function orderBy(?string $name, string $type = self::ORDER_ASC): AbstractRepository
     {
         $this->sorter['name'] = $name;
         $this->sorter['type'] = $type;

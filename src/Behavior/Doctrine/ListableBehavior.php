@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of staccato list component
+ * This file is part of staccato listable component
  *
  * (c) Krystian Karaś <dev@karashome.pl>
  *
