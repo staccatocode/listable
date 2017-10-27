@@ -55,7 +55,6 @@ class ListObject implements ListInterface
     public function __construct(ListConfigInterface $config)
     {
         $this->config = $config;
-        $this->page = $this->config->getPage();
         $this->request = Request::createFromGlobals();
     }
 
@@ -154,15 +153,14 @@ class ListObject implements ListInterface
     {
         if ($this->request instanceof Request) {
             if ($this->request->isMethod('post') && $this->request->request->has('st_list')) {
-                $params = $this->request->request->get('st_list');
+                $params = $this->request->request->get('st_list', array());
+                $params = is_array($params) ? $params : array();
 
                 $listAction = isset($params['action']) ? $params['action'] : null;
                 $listName = isset($params['name']) ? $params['name'] : null;
 
                 if ($action === $listAction && $this->getName() === $listName) {
-                    $listObjects = isset($params['objects']) ? $params['objects'] : array();
-
-                    $result = $handler($this, $listObjects, $this->request);
+                    $result = $handler($this, $params, $this->request);
 
                     if ($result instanceof Response) {
                         $result->send();
@@ -182,25 +180,24 @@ class ListObject implements ListInterface
         $repository = $this->getRepository();
 
         if ($repository instanceof AbstractRepository) {
-            $requestPage = $this->config->getPage();
             $options = $this->getOptions();
 
             $repository->setFilters($options['filters']);
             $repository->orderBy($options['sorter']['name'], $options['sorter']['type']);
 
-            $this->data = $repository->find($this->getLimit(), $requestPage);
             $this->count = $repository->count();
 
             $countPages = $this->countPages();
+            $requestPage = $this->config->getPage();
 
             if ($countPages > 0 && $requestPage + 1 > $countPages) {
                 // If we load non-existent page go back to last page
                 $this->page = $countPages - 1;
-                $this->data = $repository->find($this->getLimit(), $this->page);
-                $this->count = $repository->count();
-            } elseif (0 === $countPages) {
-                $this->page = 0;
+            } else {
+                $this->page = 0 === $countPages ? 0 : $requestPage;
             }
+
+            $this->data = $repository->find($this->getLimit(), $this->getPage());
         }
 
         return $this;

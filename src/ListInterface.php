@@ -21,7 +21,7 @@ interface ListInterface extends ListConfigInterface
     public function getData();
 
     /**
-     * Return current page.
+     * Return currently loaded page number.
      *
      * @return int
      */
