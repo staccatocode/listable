@@ -100,11 +100,11 @@ class ListRequest implements ListRequestInterface
      * Clean filters values.
      * Trim white chars and unset empty filters.
      *
-     * @param array|null $filters
+     * @param array $filters array of filters
      *
      * @return array
      */
-    protected function cleanFilters(?array $filters): array
+    protected function cleanFilters($filters): array
     {
         if (!is_array($filters)) {
             return array();

@@ -22,10 +22,10 @@ return PhpCsFixer\Config::create()
         'no_useless_return' => true,
         'ordered_class_elements' => true,
         'ordered_imports' => true,
-        'php_unit_strict' => true,
+        'php_unit_strict' => false,
         'psr4' => true,
         'strict_comparison' => false,
-		'strict_param' => false,
+        'strict_param' => false,
     ))
     ->setFinder(
         PhpCsFixer\Finder::create()
