@@ -149,7 +149,7 @@ class ListObject implements ListInterface
     /**
      * {@inheritdoc}
      */
-    public function on($action, callable $handler): ListInterface
+    public function on(string $action, callable $handler): ListInterface
     {
         if ($this->request instanceof Request) {
             if ($this->request->isMethod('post') && $this->request->request->has('st_list')) {

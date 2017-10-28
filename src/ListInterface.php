@@ -56,7 +56,7 @@ interface ListInterface extends ListConfigInterface
      *
      * @return ListInterface self
      */
-    public function on($action, callable $handler): ListInterface;
+    public function on(string $action, callable $handler): ListInterface;
 
     /**
      * Return instance of list view object.
