@@ -17,10 +17,21 @@ interface ListRequestInterface
      * Return current page number.
      *
      * @param string $paramName query page parameter name
+     * @param int    $default   query page parameter not exists
      *
      * @return int
      */
-    public function getPage(string $paramName): int;
+    public function getPage(string $paramName, int $default = 0): int;
+
+    /**
+     * Return current limit per page.
+     *
+     * @param string $paramName query limit parameter name
+     * @param int    $default   query limit parameter not exists
+     *
+     * @return int
+     */
+    public function getLimit(string $paramName, int $default = 0): int;
 
     /**
      * Return filters associated to the list.

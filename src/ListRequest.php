@@ -39,13 +39,23 @@ class ListRequest implements ListRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function getPage(string $paramName): int
+    public function getPage(string $paramName, int $defaultValue = 0): int
     {
-        if ('' !== $paramName) {
-            $page = $this->request->query->getInt($paramName, 0);
-        }
+        $page = '' === $paramName ? $defaultValue :
+            $this->request->query->getInt($paramName, $defaultValue);
 
         return $page > 0 ? $page : 0;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLimit(string $paramName, int $defaultValue = 0): int
+    {
+        $limit = '' === $paramName ? $defaultValue :
+            $this->request->query->getInt($paramName, $defaultValue);
+
+        return $limit > 0 ? $limit : 0;
     }
 
     /**

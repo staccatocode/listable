@@ -48,8 +48,12 @@ class ListBuilder extends ListConfigBuilder implements ListBuilderInterface
             ));
         }
 
-        if (null === $this->getPage()) {
-            $this->setPage($this->listRequest->getPage($this->getPageParam()));
+        if ('' !== $this->getPageParam()) {
+            $this->setPage($this->listRequest->getPage($this->getPageParam(), $this->getPage()));
+        }
+
+        if ('' !== $this->getLimitParam()) {
+            $this->setLimit($this->listRequest->getLimit($this->getLimitParam(), $this->getLimit()));
         }
 
         $this->mergeOptions();

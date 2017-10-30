@@ -49,6 +49,7 @@ class ListObjectTest extends TestCase
      * @covers \Staccato\Component\Listable\ListObject::count
      * @covers \Staccato\Component\Listable\ListObject::countPages
      * @covers \Staccato\Component\Listable\ListObject::getLimit
+     * @covers \Staccato\Component\Listable\ListObject::getLimitParam
      * @covers \Staccato\Component\Listable\ListObject::getName
      * @covers \Staccato\Component\Listable\ListObject::getPageParam
      * @covers \Staccato\Component\Listable\ListObject::getFilterSource
@@ -63,6 +64,11 @@ class ListObjectTest extends TestCase
         $this->assertSame(0, $list->getPage());
         $this->assertSame(0, $list->count());
         $this->assertSame(0, $list->countPages());
+        $this->assertSame(0, $list->getLimit());
+        $this->assertSame('', $list->getName());
+        $this->assertSame('', $list->getPageParam());
+        $this->assertSame('', $list->getLimitParam());
+        $this->assertSame(array(), $list->getData());
 
         $this->config
             ->method('getLimit')
@@ -81,6 +87,12 @@ class ListObjectTest extends TestCase
             ->willReturn('test_page');
 
         $this->assertSame('test_page', $list->getPageParam());
+
+        $this->config
+            ->method('getLimitParam')
+            ->willReturn('test_limit');
+
+        $this->assertSame('test_limit', $list->getLimitParam());
 
         $this->config
             ->method('getFilterSource')
@@ -115,8 +127,6 @@ class ListObjectTest extends TestCase
             ->willReturn($this->repository);
 
         $this->assertInstanceOf(AbstractRepository::class, $list->getRepository());
-
-        $this->assertSame(array(), $list->getData());
     }
 
     /**

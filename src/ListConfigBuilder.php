@@ -35,16 +35,16 @@ class ListConfigBuilder implements ListConfigBuilderInterface
     /**
      * Page of the list.
      *
-     * @var int|null
+     * @var int
      */
-    private $page = null;
+    private $page = 0;
 
     /**
      * Name of query page parameter for the list.
      *
      * @var string
      */
-    private $pageParam = 'page';
+    private $pageParam = '';
 
     /**
      * Limit of objects per page that
@@ -53,6 +53,13 @@ class ListConfigBuilder implements ListConfigBuilderInterface
      * @var int
      */
     private $limit = 0;
+
+    /**
+     * Name of query limit parameter for the list.
+     *
+     * @var string
+     */
+    private $limitParam = '';
 
     /**
      * Filters that will be passed to the repository.
@@ -89,8 +96,8 @@ class ListConfigBuilder implements ListConfigBuilderInterface
      * @var array
      */
     private $sorterParams = array(
-        'asc' => 'asc',
-        'desc' => 'desc',
+        'asc' => '',
+        'desc' => '',
     );
 
     /**
@@ -98,7 +105,7 @@ class ListConfigBuilder implements ListConfigBuilderInterface
      */
     public function getName(): string
     {
-        return $this->name;
+        return (string) $this->name;
     }
 
     /**
@@ -116,7 +123,7 @@ class ListConfigBuilder implements ListConfigBuilderInterface
      */
     public function getFilterSource(): string
     {
-        return $this->filterSource;
+        return (string) $this->filterSource;
     }
 
     /**
@@ -132,9 +139,9 @@ class ListConfigBuilder implements ListConfigBuilderInterface
     /**
      * {@inheritdoc}
      */
-    public function getPage(): ?int
+    public function getPage(): int
     {
-        return $this->page;
+        return (int) $this->page;
     }
 
     /**
@@ -142,7 +149,7 @@ class ListConfigBuilder implements ListConfigBuilderInterface
      */
     public function getPageParam(): string
     {
-        return $this->pageParam;
+        return (string) $this->pageParam;
     }
 
     /**
@@ -150,8 +157,7 @@ class ListConfigBuilder implements ListConfigBuilderInterface
      */
     public function setPage(int $page): ListConfigBuilderInterface
     {
-        $this->page = (int) $page;
-        $this->page = $this->page < 0 ? 0 : $this->page;
+        $this->page = $page > 0 ? $page : 0;
 
         return $this;
     }
@@ -159,9 +165,9 @@ class ListConfigBuilder implements ListConfigBuilderInterface
     /**
      * {@inheritdoc}
      */
-    public function setPageParam(string $name): ListConfigBuilderInterface
+    public function setPageParam(?string $name): ListConfigBuilderInterface
     {
-        $this->pageParam = $name;
+        $this->pageParam = (string) $name;
 
         return $this;
     }
@@ -171,7 +177,15 @@ class ListConfigBuilder implements ListConfigBuilderInterface
      */
     public function getLimit(): int
     {
-        return $this->limit;
+        return (int) $this->limit;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLimitParam(): string
+    {
+        return (string) $this->limitParam;
     }
 
     /**
@@ -179,8 +193,17 @@ class ListConfigBuilder implements ListConfigBuilderInterface
      */
     public function setLimit(int $limit): ListConfigBuilderInterface
     {
-        $limit = (int) $limit;
         $this->limit = $limit > 0 ? $limit : 0;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setLimitParam(?string $name): ListConfigBuilderInterface
+    {
+        $this->limitParam = (string) $name;
 
         return $this;
     }
@@ -196,11 +219,11 @@ class ListConfigBuilder implements ListConfigBuilderInterface
     /**
      * {@inheritdoc}
      */
-    public function setSorterParams(string $asc, string $desc): ListConfigBuilderInterface
+    public function setSorterParams(?string $asc, ?string $desc): ListConfigBuilderInterface
     {
         $this->sorterParams = array(
-            'asc' => $asc,
-            'desc' => $desc,
+            'asc' => (string) $asc,
+            'desc' => (string) $desc,
         );
 
         return $this;
@@ -212,7 +235,7 @@ class ListConfigBuilder implements ListConfigBuilderInterface
     public function setSorter(?string $name, ?string $type): ListConfigBuilderInterface
     {
         $this->sorter = array(
-            'name' => $name,
+            'name' => (string) $name,
             'type' => strtolower($type),
         );
 

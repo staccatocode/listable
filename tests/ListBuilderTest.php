@@ -55,6 +55,8 @@ class ListBuilderTest extends TestCase
     {
         $list = (new ListBuilder($this->request))
             ->setRepository($this->repository)
+            ->setPageParam('page')
+            ->setLimitParam('limit')
             ->getList();
 
         $this->assertInstanceOf(ListInterface::class, $list);

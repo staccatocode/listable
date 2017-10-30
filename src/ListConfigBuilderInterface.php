@@ -66,11 +66,11 @@ interface ListConfigBuilderInterface extends ListConfigInterface
     /**
      * Set request query page parameter name.
      *
-     * @param string $name query parameter name
+     * @param string|null $name query parameter name
      *
      * @return self
      */
-    public function setPageParam(string $name): ListConfigBuilderInterface;
+    public function setPageParam(?string $name): ListConfigBuilderInterface;
 
     /**
      * Set default list sorter.
@@ -93,7 +93,7 @@ interface ListConfigBuilderInterface extends ListConfigInterface
      *
      * @return self
      */
-    public function setSorterParams(string $asc, string $desc): ListConfigBuilderInterface;
+    public function setSorterParams(?string $asc, ?string $desc): ListConfigBuilderInterface;
 
     /**
      * Set limit of objects per page.
@@ -103,6 +103,15 @@ interface ListConfigBuilderInterface extends ListConfigInterface
      * @return self
      */
     public function setLimit(int $limit): ListConfigBuilderInterface;
+
+    /**
+     * Set request query limit parameter name.
+     *
+     * @param string|null $name query parameter name
+     *
+     * @return self
+     */
+    public function setLimitParam(?string $name): ListConfigBuilderInterface;
 
     /**
      * Set list repository.

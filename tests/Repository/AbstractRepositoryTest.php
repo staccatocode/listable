@@ -32,19 +32,19 @@ class AbstractRepositoryTest extends TestCase
         $reflection = new \ReflectionClass($this->repository);
         $reflectionProperty = $reflection->getProperty('filters');
         $reflectionProperty->setAccessible(true);
-        
+
         $this->assertSame(array(), $reflectionProperty->getValue($this->repository));
 
         $this->repository->filterBy('a', false);
         $this->repository->filterBy('b', 1);
         $this->repository->filterBy('c', '2');
 
-        $this->assertSame(array('a' => false, 'b' => 1, 'c' => '2'), 
+        $this->assertSame(array('a' => false, 'b' => 1, 'c' => '2'),
             $reflectionProperty->getValue($this->repository));
-        
+
         $this->repository->filterBy('a', true);
 
-        $this->assertSame(array('a' => true, 'b' => 1, 'c' => '2'), 
+        $this->assertSame(array('a' => true, 'b' => 1, 'c' => '2'),
             $reflectionProperty->getValue($this->repository));
     }
 
@@ -56,15 +56,15 @@ class AbstractRepositoryTest extends TestCase
         $reflection = new \ReflectionClass($this->repository);
         $reflectionProperty = $reflection->getProperty('filters');
         $reflectionProperty->setAccessible(true);
-        
+
         $this->repository->setFilters(array('a' => false, 'b' => 1));
 
-        $this->assertSame(array('a' => false, 'b' => 1), 
+        $this->assertSame(array('a' => false, 'b' => 1),
             $reflectionProperty->getValue($this->repository));
 
         $this->repository->setFilters(array('a' => true, 'b' => 1, 'c' => '2'));
 
-        $this->assertSame(array('a' => true, 'b' => 1, 'c' => '2'), 
+        $this->assertSame(array('a' => true, 'b' => 1, 'c' => '2'),
             $reflectionProperty->getValue($this->repository));
     }
 
@@ -76,13 +76,13 @@ class AbstractRepositoryTest extends TestCase
         $reflection = new \ReflectionClass($this->repository);
         $reflectionProperty = $reflection->getProperty('sorter');
         $reflectionProperty->setAccessible(true);
-        
-        $this->assertSame(array('name' => null, 'type' => AbstractRepository::ORDER_ASC), 
+
+        $this->assertSame(array('name' => null, 'type' => AbstractRepository::ORDER_ASC),
             $reflectionProperty->getValue($this->repository));
 
         $this->repository->orderBy('test', AbstractRepository::ORDER_DESC);
 
-        $this->assertSame(array('name' => 'test', 'type' => AbstractRepository::ORDER_DESC), 
+        $this->assertSame(array('name' => 'test', 'type' => AbstractRepository::ORDER_DESC),
             $reflectionProperty->getValue($this->repository));
     }
 }

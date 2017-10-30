@@ -114,11 +114,11 @@ class ListConfigBuilderTest extends TestCase
         $builder->setFilterSource('session');
         $this->assertSame('session', $builder->getFilterSource());
 
-        $this->assertNull($builder->getPage());
+        $this->assertSame(0, $builder->getPage());
         $builder->setPage(2);
         $this->assertSame(2, $builder->getPage());
 
-        $this->assertSame('page', $builder->getPageParam());
+        $this->assertSame('', $builder->getPageParam());
         $builder->setPageParam('test_page');
         $this->assertSame('test_page', $builder->getPageParam());
 
@@ -126,9 +126,13 @@ class ListConfigBuilderTest extends TestCase
         $builder->setLimit(15);
         $this->assertSame(15, $builder->getLimit());
 
+        $this->assertSame('', $builder->getLimitParam());
+        $builder->setLimitParam('test_limit');
+        $this->assertSame('test_limit', $builder->getLimitParam());
+
         $this->assertSame(array(
-            'asc' => AbstractRepository::ORDER_ASC,
-            'desc' => AbstractRepository::ORDER_DESC,
+            'asc' => '',
+            'desc' => '',
         ), $builder->getSorterParams());
 
         $builder->setSorterParams('test_asc', 'test_desc');

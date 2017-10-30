@@ -46,10 +46,34 @@ class ListRequestTest extends TestCase
         $listRequest = $this->createListRequest();
         $listRequest->request->query
             ->method('getInt')
-            ->with($this->identicalTo('page'))
-            ->willReturn(5);
+            ->with($this->logicalOr(
+                $this->equalTo('page'),
+                $this->equalTo('')
+            ))
+            ->will($this->onConsecutiveCalls(5, -1, 5));
 
         $this->assertSame(5, $listRequest->getPage('page'));
+        $this->assertSame(0, $listRequest->getPage('page'));
+        $this->assertSame(0, $listRequest->getPage(''));
+    }
+
+    /**
+     * @covers \Staccato\Component\Listable\ListRequest::getLimit
+     */
+    public function testGetLimit()
+    {
+        $listRequest = $this->createListRequest();
+        $listRequest->request->query
+            ->method('getInt')
+            ->with($this->logicalOr(
+                $this->equalTo('limit'),
+                $this->equalTo('')
+            ))
+            ->will($this->onConsecutiveCalls(5, -1, 5));
+
+        $this->assertSame(5, $listRequest->getLimit('limit'));
+        $this->assertSame(0, $listRequest->getLimit('limit'));
+        $this->assertSame(0, $listRequest->getLimit(''));
     }
 
     /**

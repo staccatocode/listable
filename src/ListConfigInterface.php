@@ -25,9 +25,9 @@ interface ListConfigInterface
     /**
      * Returns current page.
      *
-     * @return int|null If null then no page was set
+     * @return int If null then no page was set
      */
-    public function getPage(): ?int;
+    public function getPage(): int;
 
     /**
      * Returns HTTP query page name parameter.
@@ -56,6 +56,13 @@ interface ListConfigInterface
      * @return int
      */
     public function getLimit(): int;
+
+    /**
+     * Returns HTTP query limit name parameter.
+     *
+     * @return string
+     */
+    public function getLimitParam(): string;
 
     /**
      * Returns currently set list repository.

@@ -103,7 +103,7 @@ class ListObject implements ListInterface
      */
     public function getPageParam(): string
     {
-        return $this->config->getPageParam();
+        return (string) $this->config->getPageParam();
     }
 
     /**
@@ -127,7 +127,15 @@ class ListObject implements ListInterface
      */
     public function getLimit(): int
     {
-        return $this->config->getLimit();
+        return (int) $this->config->getLimit();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLimitParam(): string
+    {
+        return (string) $this->config->getLimitParam();
     }
 
     /**
@@ -188,7 +196,7 @@ class ListObject implements ListInterface
             $this->count = $repository->count();
 
             $countPages = $this->countPages();
-            $requestPage = $this->config->getPage();
+            $requestPage = (int) $this->config->getPage();
 
             if ($countPages > 0 && $requestPage + 1 > $countPages) {
                 // If we load non-existent page go back to last page
