@@ -11,6 +11,8 @@
 
 namespace Staccato\Component\Listable;
 
+use Staccato\Component\Listable\Repository\AbstractRepository;
+
 interface ListConfigBuilderInterface extends ListConfigInterface
 {
     /**
@@ -116,12 +118,9 @@ interface ListConfigBuilderInterface extends ListConfigInterface
     /**
      * Set list repository.
      *
-     * @param string|AbstractRepository $repository repository class or
-     *                                              instance of AbstractRepository
-     * @param array                     $arguments  optional arguments passed to new instance
-     *                                              of repository. Doesn't matter if $repository is object
+     * @param AbstractRepository $repository
      *
      * @return self
      */
-    public function setRepository($repository, array $arguments = array()): ListConfigBuilderInterface;
+    public function setRepository(AbstractRepository $repository): ListConfigBuilderInterface;
 }

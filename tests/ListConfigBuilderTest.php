@@ -12,12 +12,9 @@
 namespace Staccato\Component\Listable\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Staccato\Component\Listable\Exception\ClassNotFoundException;
 use Staccato\Component\Listable\ListConfigBuilder;
 use Staccato\Component\Listable\ListConfigBuilderInterface;
 use Staccato\Component\Listable\Repository\AbstractRepository;
-use Staccato\Component\Listable\Repository\Exception\InvalidRepositoryException;
-use Staccato\Component\Listable\Tests\Repository\FakeRepository;
 
 /**
  * @covers \Staccato\Component\Listable\ListConfigBuilder
@@ -44,45 +41,6 @@ class ListConfigBuilderTest extends TestCase
 
         $this->assertInstanceOf(AbstractRepository::class, $builder->getRepository());
         $this->assertSame($repository, $builder->getRepository());
-    }
-
-    /**
-     * @covers \Staccato\Component\Listable\ListConfigBuilder::setRepository
-     */
-    public function testSetRepositoryClass()
-    {
-        $builder = new ListConfigBuilder();
-
-        $builder->setRepository(FakeRepository::class);
-        $this->assertInstanceOf(AbstractRepository::class, $builder->getRepository());
-
-        $arguments = array(1, 2, 3);
-
-        $builder->setRepository(FakeRepository::class, $arguments);
-        $this->assertInstanceOf(FakeRepository::class, $builder->getRepository());
-        $this->assertSame($arguments, $builder->getRepository()->arguments);
-    }
-
-    /**
-     * @covers \Staccato\Component\Listable\ListConfigBuilder::setRepository
-     */
-    public function testSetRepositoryNonExistantClass()
-    {
-        $builder = new ListConfigBuilder();
-
-        $this->expectException(ClassNotFoundException::class);
-        $builder->setRepository(NonExistantClass::class);
-    }
-
-    /**
-     * @covers \Staccato\Component\Listable\ListConfigBuilder::setRepository
-     */
-    public function testSetRepositoryInvalidObject()
-    {
-        $builder = new ListConfigBuilder();
-
-        $this->expectException(InvalidRepositoryException::class);
-        $builder->setRepository(new \stdClass());
     }
 
     /**

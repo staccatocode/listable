@@ -11,9 +11,7 @@
 
 namespace Staccato\Component\Listable;
 
-use Staccato\Component\Listable\Exception\ClassNotFoundException;
 use Staccato\Component\Listable\Repository\AbstractRepository;
-use Staccato\Component\Listable\Repository\Exception\InvalidRepositoryException;
 
 class ListConfigBuilder implements ListConfigBuilderInterface
 {
@@ -289,23 +287,8 @@ class ListConfigBuilder implements ListConfigBuilderInterface
     /**
      * {@inheritdoc}
      */
-    public function setRepository($repository, array $arguments = array()): ListConfigBuilderInterface
+    public function setRepository(AbstractRepository $repository): ListConfigBuilderInterface
     {
-        if (is_string($repository)) {
-            if (class_exists($repository)) {
-                $repository = new $repository(...$arguments);
-            } else {
-                throw new ClassNotFoundException(sprintf('Class `%s` has not been found.', $repository));
-            }
-        }
-
-        if (!$repository instanceof AbstractRepository) {
-            throw new InvalidRepositoryException(sprintf(
-                'Repository argument must be instance of `%s` instance of `%s` given.',
-                AbstractRepository::class, is_object($repository) ? get_class($repository) : $repository
-            ));
-        }
-
         $this->repository = $repository;
 
         return $this;
