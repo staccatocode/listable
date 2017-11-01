@@ -12,9 +12,9 @@
 namespace Staccato\Component\Listable\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Staccato\Component\Listable\Exception\ClassNotFoundException;
 use Staccato\Component\Listable\Repository\AbstractRepository;
 use Staccato\Component\Listable\Repository\ClassRepositoryFactory;
+use Staccato\Component\Listable\Repository\Exception\InvalidRepositoryException;
 use Staccato\Component\Listable\Repository\RepositoryFactoryInterface;
 use Staccato\Component\Listable\Tests\Repository\FakeRepository;
 
@@ -48,11 +48,11 @@ class ClassRepositoryFactoryTest extends TestCase
     /**
      * @covers \Staccato\Component\Listable\Repository\ClassRepositoryFactory::create
      */
-    public function testClassRepositoryFactoryClassNotFoundException()
+    public function testClassRepositoryFactoryInvalidRepositoryException()
     {
         $repositoryFactory = new ClassRepositoryFactory();
 
-        $this->expectException(ClassNotFoundException::class);
+        $this->expectException(InvalidRepositoryException::class);
         $repositoryFactory->create('NonExistantClass');
     }
 }

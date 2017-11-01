@@ -11,8 +11,7 @@
 
 namespace Staccato\Component\Listable\Repository;
 
-use Staccato\Component\Listable\Exception\ClassNotFoundException;
-use Staccato\Component\Listable\Repository;
+use Staccato\Component\Listable\Repository\Exception\InvalidRepositoryException;
 
 class ClassRepositoryFactory implements RepositoryFactoryInterface
 {
@@ -32,9 +31,9 @@ class ClassRepositoryFactory implements RepositoryFactoryInterface
             $class = $data;
         }
 
-        if (!class_exists($class)) {
-            throw new ClassNotFoundException(sprintf(
-                'Repository class `%s` does not exists.', $class
+        if (!is_subclass_of($class, AbstractRepository::class)) {
+            throw new InvalidRepositoryException(sprintf(
+                'Class `%s` is not valid repository class.', $class
             ));
         }
 
