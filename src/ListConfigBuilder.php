@@ -60,6 +60,13 @@ class ListConfigBuilder implements ListConfigBuilderInterface
     private $limitParam = '';
 
     /**
+     * Limit min and max options.
+     *
+     * @var array
+     */
+    private $limitParamOptions = array();
+
+    /**
      * Filters that will be passed to the repository.
      *
      * @var array
@@ -175,7 +182,13 @@ class ListConfigBuilder implements ListConfigBuilderInterface
      */
     public function getLimit(): int
     {
-        return (int) $this->limit;
+        $min = isset($this->limitParamOptions['min']) ? (int) $this->limitParamOptions['min'] : 0;
+        $max = isset($this->limitParamOptions['max']) ? (int) $this->limitParamOptions['max'] : (int) $this->limit;
+
+        $limit = max((int) $this->limit, $min);
+        $limit = min($limit, $max);
+
+        return $limit;
     }
 
     /**
@@ -199,9 +212,10 @@ class ListConfigBuilder implements ListConfigBuilderInterface
     /**
      * {@inheritdoc}
      */
-    public function setLimitParam(?string $name): ListConfigBuilderInterface
+    public function setLimitParam(?string $name, array $options = array()): ListConfigBuilderInterface
     {
         $this->limitParam = (string) $name;
+        $this->limitParamOptions = $options;
 
         return $this;
     }

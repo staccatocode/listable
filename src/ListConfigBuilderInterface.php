@@ -109,11 +109,12 @@ interface ListConfigBuilderInterface extends ListConfigInterface
     /**
      * Set request query limit parameter name.
      *
-     * @param string|null $name query parameter name
+     * @param string|null $name    query parameter name
+     * @param array       $options min and max option
      *
      * @return self
      */
-    public function setLimitParam(?string $name): ListConfigBuilderInterface;
+    public function setLimitParam(?string $name, array $options = array()): ListConfigBuilderInterface;
 
     /**
      * Set list repository.

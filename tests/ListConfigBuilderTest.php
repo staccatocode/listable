@@ -80,13 +80,19 @@ class ListConfigBuilderTest extends TestCase
         $builder->setPageParam('test_page');
         $this->assertSame('test_page', $builder->getPageParam());
 
+        $this->assertSame('', $builder->getLimitParam());
+        $builder->setLimitParam('test_limit');
+        $this->assertSame('test_limit', $builder->getLimitParam());
+
         $this->assertSame(0, $builder->getLimit());
         $builder->setLimit(15);
         $this->assertSame(15, $builder->getLimit());
 
-        $this->assertSame('', $builder->getLimitParam());
-        $builder->setLimitParam('test_limit');
-        $this->assertSame('test_limit', $builder->getLimitParam());
+        $builder->setLimit(100);
+        $builder->setLimitParam('test_limit', array('min' => 5, 'max' => 10));
+        $this->assertSame(10, $builder->getLimit());
+        $builder->setLimit(0);
+        $this->assertSame(5, $builder->getLimit());
 
         $this->assertSame(array(
             'asc' => '',
