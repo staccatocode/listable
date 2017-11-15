@@ -163,6 +163,9 @@ class ListObjectTest extends TestCase
         $this->assertArrayHasKey('limit', $listView->vars['pagination']);
         $this->assertArrayHasKey('params', $listView->vars);
         $this->assertArrayHasKey('action', $listView->vars['params']);
+        $this->assertArrayHasKey('limit', $listView->vars['params']);
+        $this->assertArrayHasKey('page', $listView->vars['params']);
+        $this->assertArrayHasKey('sorter', $listView->vars['params']);
     }
 
     /**

@@ -230,6 +230,9 @@ class ListObject implements ListInterface
         $view->vars['data'] = $this->getData();
         $view->vars['options'] = $this->getOptions();
         $view->vars['params']['action'] = $this->getActionParam();
+        $view->vars['params']['limit'] = $this->getLimitParam();
+        $view->vars['params']['page'] = $this->getPageParam();
+        $view->vars['params']['sorter'] = $this->getSorterParams();
         $view->vars['pagination']['count'] = count($view->vars['data']);
         $view->vars['pagination']['total'] = $this->count();
         $view->vars['pagination']['pages'] = $this->countPages();
