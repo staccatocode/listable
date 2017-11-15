@@ -51,6 +51,8 @@ class ListConfigBuilderTest extends TestCase
      * @covers \Staccato\Component\Listable\ListConfigBuilder::getPage
      * @covers \Staccato\Component\Listable\ListConfigBuilder::setPageParam
      * @covers \Staccato\Component\Listable\ListConfigBuilder::getPageParam
+     * @covers \Staccato\Component\Listable\ListConfigBuilder::setActionParam
+     * @covers \Staccato\Component\Listable\ListConfigBuilder::getActionParam
      * @covers \Staccato\Component\Listable\ListConfigBuilder::setLimit
      * @covers \Staccato\Component\Listable\ListConfigBuilder::getLimit
      * @covers \Staccato\Component\Listable\ListConfigBuilder::getSorterParams
@@ -83,6 +85,10 @@ class ListConfigBuilderTest extends TestCase
         $this->assertSame('', $builder->getLimitParam());
         $builder->setLimitParam('test_limit');
         $this->assertSame('test_limit', $builder->getLimitParam());
+
+        $this->assertSame('st_list', $builder->getActionParam());
+        $builder->setActionParam('st_test');
+        $this->assertSame('st_test', $builder->getActionParam());
 
         $this->assertSame(0, $builder->getLimit());
         $builder->setLimit(15);

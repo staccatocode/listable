@@ -18,6 +18,7 @@ class ListView implements \ArrayAccess, \IteratorAggregate, \Countable
      */
     public $vars = array(
         'name' => null,
+        'params' => array(),
         'data' => array(),
         'options' => array(),
         'pagination' => array(

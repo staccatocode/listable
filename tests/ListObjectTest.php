@@ -52,6 +52,7 @@ class ListObjectTest extends TestCase
      * @covers \Staccato\Component\Listable\ListObject::getLimitParam
      * @covers \Staccato\Component\Listable\ListObject::getName
      * @covers \Staccato\Component\Listable\ListObject::getPageParam
+     * @covers \Staccato\Component\Listable\ListObject::getActionParam
      * @covers \Staccato\Component\Listable\ListObject::getFilterSource
      * @covers \Staccato\Component\Listable\ListObject::getSorterParams
      * @covers \Staccato\Component\Listable\ListObject::getOptions
@@ -93,6 +94,12 @@ class ListObjectTest extends TestCase
             ->willReturn('test_limit');
 
         $this->assertSame('test_limit', $list->getLimitParam());
+
+        $this->config
+            ->method('getActionParam')
+            ->willReturn('test_action');
+
+        $this->assertSame('test_action', $list->getActionParam());
 
         $this->config
             ->method('getFilterSource')
@@ -144,6 +151,18 @@ class ListObjectTest extends TestCase
         $this->assertInstanceOf(ListView::class, $listView);
         $this->assertObjectHasAttribute('vars', $listView);
         $this->assertInternalType('array', $listView->vars);
+
+        $this->assertArrayHasKey('name', $listView->vars);
+        $this->assertArrayHasKey('data', $listView->vars);
+        $this->assertArrayHasKey('options', $listView->vars);
+        $this->assertArrayHasKey('pagination', $listView->vars);
+        $this->assertArrayHasKey('count', $listView->vars['pagination']);
+        $this->assertArrayHasKey('total', $listView->vars['pagination']);
+        $this->assertArrayHasKey('pages', $listView->vars['pagination']);
+        $this->assertArrayHasKey('page', $listView->vars['pagination']);
+        $this->assertArrayHasKey('limit', $listView->vars['pagination']);
+        $this->assertArrayHasKey('params', $listView->vars);
+        $this->assertArrayHasKey('action', $listView->vars['params']);
     }
 
     /**
@@ -165,6 +184,10 @@ class ListObjectTest extends TestCase
         $this->config
             ->method('getName')
             ->willReturn('test');
+
+        $this->config
+            ->method('getActionParam')
+            ->willReturn('st_list');
 
         $request
             ->method('isMethod')

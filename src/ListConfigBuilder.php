@@ -106,6 +106,13 @@ class ListConfigBuilder implements ListConfigBuilderInterface
     );
 
     /**
+     * Action param name.
+     *
+     * @var string
+     */
+    private $actionParam = 'st_list';
+
+    /**
      * {@inheritdoc}
      */
     public function getName(): string
@@ -237,6 +244,24 @@ class ListConfigBuilder implements ListConfigBuilderInterface
             'asc' => (string) $asc,
             'desc' => (string) $desc,
         );
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getActionParam(): string
+    {
+        return $this->actionParam;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setActionParam(?string $name): ListConfigBuilderInterface
+    {
+        $this->actionParam = (string) $name;
 
         return $this;
     }

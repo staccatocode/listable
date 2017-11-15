@@ -65,6 +65,13 @@ interface ListConfigInterface
     public function getLimitParam(): string;
 
     /**
+     * Returns HTTP action param name.
+     *
+     * @return string
+     */
+    public function getActionParam(): string;
+
+    /**
      * Returns currently set list repository.
      *
      * @return AbstractRepository|null

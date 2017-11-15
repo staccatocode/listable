@@ -117,6 +117,15 @@ interface ListConfigBuilderInterface extends ListConfigInterface
     public function setLimitParam(?string $name, array $options = array()): ListConfigBuilderInterface;
 
     /**
+     * Set action param name.
+     *
+     * @param string|null $name parameter name
+     *
+     * @return self
+     */
+    public function setActionParam(?string $name): ListConfigBuilderInterface;
+
+    /**
      * Set list repository.
      *
      * @param AbstractRepository $repository

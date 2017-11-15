@@ -141,6 +141,14 @@ class ListObject implements ListInterface
     /**
      * {@inheritdoc}
      */
+    public function getActionParam(): string
+    {
+        return (string) $this->config->getActionParam();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getRepository(): AbstractRepository
     {
         return $this->config->getRepository();
@@ -160,8 +168,8 @@ class ListObject implements ListInterface
     public function on(string $action, callable $handler): ListInterface
     {
         if ($this->request instanceof Request) {
-            if ($this->request->isMethod('post') && $this->request->request->has('st_list')) {
-                $params = $this->request->request->get('st_list', array());
+            if ($this->request->isMethod('post') && $this->request->request->has($this->getActionParam())) {
+                $params = $this->request->request->get($this->getActionParam(), array());
                 $params = is_array($params) ? $params : array();
 
                 $listAction = isset($params['action']) ? $params['action'] : null;
@@ -221,6 +229,7 @@ class ListObject implements ListInterface
         $view->vars['name'] = $this->getName();
         $view->vars['data'] = $this->getData();
         $view->vars['options'] = $this->getOptions();
+        $view->vars['params']['action'] = $this->getActionParam();
         $view->vars['pagination']['count'] = count($view->vars['data']);
         $view->vars['pagination']['total'] = $this->count();
         $view->vars['pagination']['pages'] = $this->countPages();
