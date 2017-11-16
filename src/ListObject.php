@@ -229,6 +229,7 @@ class ListObject implements ListInterface
         $view->vars['name'] = $this->getName();
         $view->vars['data'] = $this->getData();
         $view->vars['options'] = $this->getOptions();
+        $view->vars['filter_source'] = $this->getFilterSource();
         $view->vars['params']['action'] = $this->getActionParam();
         $view->vars['params']['limit'] = $this->getLimitParam();
         $view->vars['params']['page'] = $this->getPageParam();
