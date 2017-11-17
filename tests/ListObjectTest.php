@@ -203,17 +203,26 @@ class ListObjectTest extends TestCase
             ->with($this->identicalTo('st_list'))
             ->willReturn(true);
 
-        $testPostData = array(
+        $testActionPostData = array(
             'action' => 'test',
             'name' => 'test',
+        );
+
+        $testListPostData = array(
             'objects' => array('1', '2'),
         );
 
         $request->request
             ->method('get')
-            ->with($this->identicalTo('st_list'))
-            ->willReturn($testPostData);
-
+            ->with($this->logicalOr(
+                $this->equalTo('st_list'),
+                $this->equalTo($this->config->getName())
+            ))
+            ->will($this->returnValueMap(array(
+                array('st_list', array(), $testActionPostData),
+                array($this->config->getName(), array(), $testListPostData),
+            )));
+        
         $response
             ->expects($this->once())
             ->method('send');
@@ -229,7 +238,7 @@ class ListObjectTest extends TestCase
         });
 
         $this->assertSame($list, $result['list']);
-        $this->assertSame($testPostData, $result['data']);
+        $this->assertSame($testListPostData, $result['data']);
         $this->assertSame($request, $result['request']);
     }
 
