@@ -21,14 +21,14 @@ class ListRequest implements ListRequestInterface
      *
      * @var Session
      */
-    public $session;
+    protected $session;
 
     /**
      * Request.
      *
      * @var Request
      */
-    public $request;
+    protected $request;
 
     public function __construct()
     {

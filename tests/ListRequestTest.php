@@ -44,7 +44,8 @@ class ListRequestTest extends TestCase
     public function testGetPage()
     {
         $listRequest = $this->createListRequest();
-        $listRequest->request->query
+
+        $this->getPrivatePropery($listRequest, 'request')->query
             ->method('getInt')
             ->with($this->logicalOr(
                 $this->equalTo('page'),
@@ -63,7 +64,8 @@ class ListRequestTest extends TestCase
     public function testGetLimit()
     {
         $listRequest = $this->createListRequest();
-        $listRequest->request->query
+
+        $this->getPrivatePropery($listRequest, 'request')->query
             ->method('getInt')
             ->with($this->logicalOr(
                 $this->equalTo('limit'),
@@ -87,12 +89,13 @@ class ListRequestTest extends TestCase
         );
 
         $listRequest = $this->createListRequest();
-        $listRequest->request->query
+
+        $this->getPrivatePropery($listRequest, 'request')->query
             ->method('get')
             ->with($this->identicalTo('list'))
             ->will($this->onConsecutiveCalls($testFilters, 'invalid'));
 
-        $listRequest->session
+        $this->getPrivatePropery($listRequest, 'session')
             ->method('get')
             ->with($this->identicalTo('st.list.list'))
             ->will($this->onConsecutiveCalls($testFilters, 'invalid'));
@@ -113,7 +116,8 @@ class ListRequestTest extends TestCase
         );
 
         $listRequest = $this->createListRequest();
-        $listRequest->session
+
+        $this->getPrivatePropery($listRequest, 'session')
             ->expects($this->once())
             ->method('set')
             ->with(
@@ -130,7 +134,8 @@ class ListRequestTest extends TestCase
     public function testGetSorter()
     {
         $listRequest = $this->createListRequest();
-        $listRequest->request->query
+
+        $this->getPrivatePropery($listRequest, 'request')->query
             ->method('has')
             ->with($this->logicalOr(
                 $this->equalTo('asc_true'),
@@ -145,7 +150,7 @@ class ListRequestTest extends TestCase
                 array('desc_false', false),
             )));
 
-        $listRequest->request->query
+        $this->getPrivatePropery($listRequest, 'request')->query
             ->method('get')
             ->with($this->logicalOr(
                 $this->equalTo('asc_true'),
@@ -167,9 +172,27 @@ class ListRequestTest extends TestCase
     protected function createListRequest()
     {
         $listRequest = new ListRequest();
-        $listRequest->request = $this->request;
-        $listRequest->session = $this->session;
+
+        $this->setPrivatePropery($listRequest, 'request', $this->request);
+        $this->setPrivatePropery($listRequest, 'session', $this->session);
 
         return $listRequest;
+    }
+
+    protected function setPrivatePropery($object, string $property, $value)
+    {
+        $reflection = new \ReflectionClass($object);
+        $reflectionProperty = $reflection->getProperty($property);
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($object, $value);
+    }
+
+    protected function getPrivatePropery($object, string $property)
+    {
+        $reflection = new \ReflectionClass($object);
+        $reflectionProperty = $reflection->getProperty($property);
+        $reflectionProperty->setAccessible(true);
+
+        return $reflectionProperty->getValue($object);
     }
 }

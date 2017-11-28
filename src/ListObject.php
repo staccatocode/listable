@@ -174,7 +174,7 @@ class ListObject implements ListInterface
 
                 $listAction = isset($params['action']) ? $params['action'] : null;
                 $listName = isset($params['name']) ? $params['name'] : null;
-                
+
                 if ($action === $listAction && $this->getName() === $listName) {
                     $data = (array) $this->request->request->get($listName, array());
                     $result = $handler($this, $data, $this->request);

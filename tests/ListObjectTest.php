@@ -222,7 +222,7 @@ class ListObjectTest extends TestCase
                 array('st_list', array(), $testActionPostData),
                 array($this->config->getName(), array(), $testListPostData),
             )));
-        
+
         $response
             ->expects($this->once())
             ->method('send');
