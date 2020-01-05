@@ -11,28 +11,32 @@
 
 namespace Staccato\Component\Listable\Tests;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Staccato\Component\Listable\ListRequest;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Session;
 
 /**
  * @covers \Staccato\Component\Listable\ListRequest
  */
 class ListRequestTest extends TestCase
 {
-    protected function setUp()
+    /**
+     * @var MockObject|Request|null
+     */
+    private $request;
+
+    protected function setUp(): void
     {
         $this->request = $this->getMockBuilder(Request::class)->getMock();
         $this->request->query = $this->getMockBuilder(ParameterBag::class)->getMock();
-        $this->session = $this->getMockBuilder(Session::class)->getMock();
     }
 
     /**
      * @covers \Staccato\Component\Listable\ListRequest::__construct
      */
-    public function testCreate()
+    public function testCreate(): void
     {
         $listRequest = $this->createListRequest();
         $this->assertInstanceOf(ListRequest::class, $listRequest);
@@ -41,11 +45,11 @@ class ListRequestTest extends TestCase
     /**
      * @covers \Staccato\Component\Listable\ListRequest::getPage
      */
-    public function testGetPage()
+    public function testGetPage(): void
     {
         $listRequest = $this->createListRequest();
 
-        $this->getPrivatePropery($listRequest, 'request')->query
+        $this->getPrivateProperty($listRequest, 'request')->query
             ->method('getInt')
             ->with($this->logicalOr(
                 $this->equalTo('page'),
@@ -61,11 +65,11 @@ class ListRequestTest extends TestCase
     /**
      * @covers \Staccato\Component\Listable\ListRequest::getLimit
      */
-    public function testGetLimit()
+    public function testGetLimit(): void
     {
         $listRequest = $this->createListRequest();
 
-        $this->getPrivatePropery($listRequest, 'request')->query
+        $this->getPrivateProperty($listRequest, 'request')->query
             ->method('getInt')
             ->with($this->logicalOr(
                 $this->equalTo('limit'),
@@ -81,7 +85,7 @@ class ListRequestTest extends TestCase
     /**
      * @covers \Staccato\Component\Listable\ListRequest::getFilters
      */
-    public function testGetFilters()
+    public function testGetFilters(): void
     {
         $testFilters = array(
             'filter' => 'value',
@@ -90,96 +94,50 @@ class ListRequestTest extends TestCase
 
         $listRequest = $this->createListRequest();
 
-        $this->getPrivatePropery($listRequest, 'request')->query
+        $this->getPrivateProperty($listRequest, 'request')
             ->method('get')
             ->with($this->identicalTo('list'))
             ->will($this->onConsecutiveCalls($testFilters, 'invalid'));
 
-        $this->getPrivatePropery($listRequest, 'session')
-            ->method('get')
-            ->with($this->identicalTo('st.list.list'))
-            ->will($this->onConsecutiveCalls($testFilters, 'invalid'));
-
-        $this->assertSame($testFilters, $listRequest->getFilters('list', 'get'));
-        $this->assertSame(array(), $listRequest->getFilters('list', 'get'));
-        $this->assertSame($testFilters, $listRequest->getFilters('list', 'session'));
-        $this->assertSame(array(), $listRequest->getFilters('list', 'session'));
-    }
-
-    /**
-     * @covers \Staccato\Component\Listable\ListRequest::storeFilters
-     */
-    public function testStoreFilters()
-    {
-        $testFilters = array(
-            'filter' => 1,
-        );
-
-        $listRequest = $this->createListRequest();
-
-        $this->getPrivatePropery($listRequest, 'session')
-            ->expects($this->once())
-            ->method('set')
-            ->with(
-                $this->identicalTo('st.list.list'),
-                $this->identicalTo($testFilters)
-            );
-
-        $listRequest->storeFilters('list', $testFilters);
+        $this->assertSame($testFilters, $listRequest->getFilters('list'));
+        $this->assertSame(array(), $listRequest->getFilters('list'));
     }
 
     /**
      * @covers \Staccato\Component\Listable\ListRequest::getSorter
      */
-    public function testGetSorter()
+    public function testGetSorter(): void
     {
+        $testSorter = array(
+            'name' => 'asc',
+            'created' => 'desc',
+        );
+
+        $testInvalidSorter = array(
+            'invalid' => array('asc'),
+        );
+
         $listRequest = $this->createListRequest();
 
-        $this->getPrivatePropery($listRequest, 'request')->query
-            ->method('has')
-            ->with($this->logicalOr(
-                $this->equalTo('asc_true'),
-                $this->equalTo('asc_false'),
-                $this->equalTo('desc_true'),
-                $this->equalTo('desc_false')
-            ))
-            ->will($this->returnValueMap(array(
-                array('asc_true', true),
-                array('asc_false', false),
-                array('desc_true', true),
-                array('desc_false', false),
-            )));
-
-        $this->getPrivatePropery($listRequest, 'request')->query
+        $this->getPrivateProperty($listRequest, 'request')->query
             ->method('get')
-            ->with($this->logicalOr(
-                $this->equalTo('asc_true'),
-                $this->equalTo('desc_true')
-            ))
-            ->willReturn('created_at');
+            ->with($this->identicalTo('order'))
+            ->will($this->onConsecutiveCalls($testSorter + $testInvalidSorter, 'invalid'));
 
-        $this->assertSame(array(
-            'name' => 'created_at',
-            'type' => 'asc',
-        ), $listRequest->getSorter('asc_true', 'desc_false'));
-
-        $this->assertSame(array(
-            'name' => 'created_at',
-            'type' => 'desc',
-        ), $listRequest->getSorter('asc_false', 'desc_true'));
+        $this->assertSame($testSorter, $listRequest->getSorter('order'));
+        $this->assertSame(array(), $listRequest->getSorter('order'));
     }
 
-    protected function createListRequest()
+    protected function createListRequest(): ListRequest
     {
         $listRequest = new ListRequest();
 
-        $this->setPrivatePropery($listRequest, 'request', $this->request);
-        $this->setPrivatePropery($listRequest, 'session', $this->session);
+        $this->setPrivateProperty($listRequest, 'request', $this->request);
 
         return $listRequest;
     }
 
-    protected function setPrivatePropery($object, string $property, $value)
+    protected function setPrivateProperty($object, string $property, $value): void
     {
         $reflection = new \ReflectionClass($object);
         $reflectionProperty = $reflection->getProperty($property);
@@ -187,7 +145,7 @@ class ListRequestTest extends TestCase
         $reflectionProperty->setValue($object, $value);
     }
 
-    protected function getPrivatePropery($object, string $property)
+    protected function getPrivateProperty($object, string $property)
     {
         $reflection = new \ReflectionClass($object);
         $reflectionProperty = $reflection->getProperty($property);

@@ -19,20 +19,20 @@ use Staccato\Component\Listable\ListView;
  */
 class ListViewTest extends TestCase
 {
-    public function testCreate()
+    public function testCreate(): void
     {
         $view = new ListView();
         $this->assertInstanceOf(ListView::class, $view);
     }
 
-    public function testArrayAccess()
+    public function testArrayAccess(): void
     {
         $data = array(1, 2, 3);
 
         $view = new ListView();
 
         $this->assertObjectHasAttribute('vars', $view);
-        $this->assertInternalType('array', $view->vars);
+        $this->assertIsArray($view->vars);
 
         $view->vars['data'] = $data;
         $view[4] = 4;
@@ -43,5 +43,11 @@ class ListViewTest extends TestCase
         $this->assertCount(4, $view);
         unset($view[4]);
         $this->assertFalse(isset($view[4]));
+    }
+
+    public function testJsonSerialize(): void
+    {
+        $view = new ListView();
+        $this->assertJson(json_encode($view));
     }
 }

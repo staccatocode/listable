@@ -11,9 +11,15 @@
 
 namespace Staccato\Component\Listable\Tests;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Staccato\Component\Listable\Field\AbstractField;
+use Staccato\Component\Listable\Filter\AbstractFilter;
 use Staccato\Component\Listable\ListConfigBuilder;
 use Staccato\Component\Listable\ListConfigBuilderInterface;
+use Staccato\Component\Listable\ListRegistryInterface;
+use Staccato\Component\Listable\ListStateProvider;
+use Staccato\Component\Listable\ListTypeInterface;
 use Staccato\Component\Listable\Repository\AbstractRepository;
 
 /**
@@ -21,58 +27,35 @@ use Staccato\Component\Listable\Repository\AbstractRepository;
  */
 class ListConfigBuilderTest extends TestCase
 {
-    public function testCreate()
+    /**
+     * @var MockObject|ListRegistryInterface|null
+     */
+    private $registry;
+
+    protected function setUp(): void
     {
-        $builder = new ListConfigBuilder();
+        $this->registry = $this->getMockBuilder(ListRegistryInterface::class)->getMock();
+    }
+
+    public function testCreate(): void
+    {
+        $builder = new ListConfigBuilder($this->registry);
 
         $this->assertInstanceOf(ListConfigBuilder::class, $builder);
         $this->assertInstanceOf(ListConfigBuilderInterface::class, $builder);
     }
 
-    /**
-     * @covers \Staccato\Component\Listable\ListConfigBuilder::setRepository
-     */
-    public function testSetRepositoryObject()
+    public function testGettersAndSetters(): void
     {
-        $repository = $this->getMockBuilder(AbstractRepository::class)->getMock();
+        $builder = new ListConfigBuilder($this->registry);
 
-        $builder = new ListConfigBuilder();
-        $builder->setRepository($repository);
-
-        $this->assertInstanceOf(AbstractRepository::class, $builder->getRepository());
-        $this->assertSame($repository, $builder->getRepository());
-    }
-
-    /**
-     * @covers \Staccato\Component\Listable\ListConfigBuilder::setName
-     * @covers \Staccato\Component\Listable\ListConfigBuilder::getName
-     * @covers \Staccato\Component\Listable\ListConfigBuilder::setFilterSource
-     * @covers \Staccato\Component\Listable\ListConfigBuilder::setPage
-     * @covers \Staccato\Component\Listable\ListConfigBuilder::getPage
-     * @covers \Staccato\Component\Listable\ListConfigBuilder::setPageParam
-     * @covers \Staccato\Component\Listable\ListConfigBuilder::getPageParam
-     * @covers \Staccato\Component\Listable\ListConfigBuilder::setActionParam
-     * @covers \Staccato\Component\Listable\ListConfigBuilder::getActionParam
-     * @covers \Staccato\Component\Listable\ListConfigBuilder::setLimit
-     * @covers \Staccato\Component\Listable\ListConfigBuilder::getLimit
-     * @covers \Staccato\Component\Listable\ListConfigBuilder::getSorterParams
-     * @covers \Staccato\Component\Listable\ListConfigBuilder::setSorter
-     * @covers \Staccato\Component\Listable\ListConfigBuilder::setFilter
-     * @covers \Staccato\Component\Listable\ListConfigBuilder::setFilters
-     */
-    public function testGettersAndSetters()
-    {
-        $builder = new ListConfigBuilder();
-
-        $this->assertNull($builder->getRepository());
+        $this->assertSame(ListStateProvider::class, $builder->getStateProvider());
+        $builder->setStateProvider('test');
+        $this->assertSame('test', $builder->getStateProvider());
 
         $this->assertSame('list', $builder->getName());
         $builder->setName('test');
         $this->assertSame('test', $builder->getName());
-
-        $this->assertSame('get', $builder->getFilterSource());
-        $builder->setFilterSource('session');
-        $this->assertSame('session', $builder->getFilterSource());
 
         $this->assertSame(0, $builder->getPage());
         $builder->setPage(2);
@@ -85,48 +68,138 @@ class ListConfigBuilderTest extends TestCase
         $this->assertSame('', $builder->getLimitParam());
         $builder->setLimitParam('test_limit');
         $this->assertSame('test_limit', $builder->getLimitParam());
-
-        $this->assertSame('st_list', $builder->getActionParam());
-        $builder->setActionParam('st_test');
-        $this->assertSame('st_test', $builder->getActionParam());
+        $this->assertEquals(array('min' => null, 'max' => null), $builder->getLimitParamOptions());
 
         $this->assertSame(0, $builder->getLimit());
         $builder->setLimit(15);
         $this->assertSame(15, $builder->getLimit());
 
-        $builder->setLimit(100);
         $builder->setLimitParam('test_limit', array('min' => 5, 'max' => 10));
         $this->assertSame(10, $builder->getLimit());
+        $this->assertEquals(array('min' => 5, 'max' => 10), $builder->getLimitParamOptions());
         $builder->setLimit(0);
         $this->assertSame(5, $builder->getLimit());
 
-        $this->assertSame(array(
-            'asc' => '',
-            'desc' => '',
-        ), $builder->getSorterParams());
-
-        $builder->setSorterParams('test_asc', 'test_desc');
-        $this->assertSame(array(
-            'asc' => 'test_asc',
-            'desc' => 'test_desc',
-        ), $builder->getSorterParams());
-
+        $this->assertSame(array(), $builder->getSorter());
         $builder->setSorter('test', 'desc');
-        $builder->setFilter('test_filter', 'value');
-        $builder->setFilters(array('other_filters' => 1));
+        $builder->setSorter('name', 'asc');
+        $this->assertSame(array('test' => 'desc', 'name' => 'asc'), $builder->getSorter());
 
-        $options = $builder->getOptions();
+        $builder->setSorter('test', null);
+        $this->assertSame(array('name' => 'asc'), $builder->getSorter());
 
-        $this->assertSame(array(
-            'name' => 'test',
-            'type' => 'desc',
-        ), $options['sorter']);
+        $builder->setSorter(null, null);
+        $this->assertSame(array(), $builder->getSorter());
 
-        $this->assertSame(array(
-            'test_filter' => 'value',
-            'other_filters' => 1,
-        ), $options['filters']);
+        $this->assertSame('', $builder->getSorterParam());
+        $builder->setSorterParam('test_sorter');
+        $this->assertSame('test_sorter', $builder->getSorterParam());
+
+        $this->assertSame('', $builder->getFiltersParam());
+        $builder->setFiltersParam('test_filters');
+        $this->assertSame('test_filters', $builder->getFiltersParam());
+
+        $this->assertFalse($builder->getPersistState());
+        $builder->setPersistState(true);
+        $this->assertTrue($builder->getPersistState());
+
+        $this->assertEmpty($builder->getOptions());
+        $builder->setOptions(array('a' => 1));
+        $this->assertSame(array('a' => 1), $builder->getOptions());
+
+        $type = $this->getMockBuilder(ListTypeInterface::class)->getMock();
+        $this->assertNull($builder->getType());
+        $builder->setType($type);
+        $this->assertSame($type, $builder->getType());
 
         $this->assertEquals($builder, $builder->getListConfig());
+    }
+
+    public function testSetRepository(): void
+    {
+        $builder = new ListConfigBuilder($this->registry);
+
+        $mockRepositoryOptions = array('a' => 1, 'b' => false);
+        $mockRepository = $this->getMockBuilder(AbstractRepository::class)->getMock();
+        $mockRepository->method('setOptions')
+            ->with($mockRepositoryOptions)
+            ->willReturnSelf()
+        ;
+
+        $this->registry
+            ->method('getRepository')
+            ->with(AbstractRepository::class)
+            ->willReturn($mockRepository)
+        ;
+
+        $this->assertNull($builder->getRepository());
+        $builder->setRepository(AbstractRepository::class, $mockRepositoryOptions);
+        $this->assertSame($mockRepository, $builder->getRepository());
+    }
+
+    public function testSetFilter(): void
+    {
+        $builder = new ListConfigBuilder($this->registry);
+
+        $filterOptions = array('a' => 1, 'b' => true, 'c' => 'value');
+
+        $mockFilter = $this->getMockBuilder(AbstractFilter::class)->getMock();
+        $mockFilter
+            ->method('setOptions')
+            ->with($this->identicalTo($filterOptions))
+            ->willReturnSelf()
+        ;
+
+        $this->registry
+            ->method('getFilterType')
+            ->with($this->identicalTo('mockFilter'))
+            ->willReturn($mockFilter)
+        ;
+
+        $this->assertSame(array(), $builder->getFilters());
+        $builder->setFilter('test', 'mockFilter', $filterOptions);
+        $this->assertSame(array('test' => $mockFilter), $builder->getFilters());
+    }
+
+    public function testSetField(): void
+    {
+        $builder = new ListConfigBuilder($this->registry);
+
+        $fieldOptions = array('a' => 1, 'b' => true, 'c' => 'value', 'filter' => 'test_filter');
+
+        $mockField = $this->getMockBuilder(AbstractField::class)->getMock();
+        $mockField
+            ->method('setOptions')
+            ->with($this->identicalTo($fieldOptions))
+            ->willReturnSelf()
+        ;
+
+        $mockField
+            ->method('hasFilter')
+            ->willReturn(true)
+        ;
+
+        $mockField
+            ->method('getFilter')
+            ->willReturn($fieldOptions['filter'])
+        ;
+
+        $this->registry
+            ->method('getFieldType')
+            ->with($this->identicalTo('mockField'))
+            ->willReturn($mockField)
+        ;
+
+        $mockFilter = $this->getMockBuilder(AbstractFilter::class)->getMock();
+
+        $this->registry
+            ->method('getFilterType')
+            ->with($this->identicalTo('test_filter'))
+            ->willReturn($mockFilter)
+        ;
+
+        $this->assertSame(array(), $builder->getFields());
+        $builder->setField('test', 'mockField', $fieldOptions);
+        $this->assertSame(array('test' => $mockField), $builder->getFields());
     }
 }
