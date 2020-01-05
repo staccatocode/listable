@@ -11,126 +11,81 @@
 
 namespace Staccato\Component\Listable;
 
-use Staccato\Component\Listable\Repository\AbstractRepository;
-
 interface ListConfigBuilderInterface extends ListConfigInterface
 {
     /**
-     * Set name (ID) of the list.
-     *
-     * @param string $name
-     *
-     * @return self
+     * Sets name (ID) of the list.
      */
-    public function setName(string $name): ListConfigBuilderInterface;
+    public function setName(string $name): self;
 
     /**
-     * Set new filter.
-     *
-     * @param string $name   filter name
-     * @param mixed  $value  filter value
-     * @param bool   $locked if true, filter should never be overwritten
-     *                       by requested filters
-     *
-     * @return self
+     * Sets list page.
      */
-    public function setFilter(string $name, $value, bool $locked = false): ListConfigBuilderInterface;
+    public function setPage(int $page): self;
 
     /**
-     * Set new filters.
-     *
-     * @param array $filters array of filters
-     * @param bool  $locked  if true, filter should never be overwritten
-     *                       by requested filters
-     *
-     * @return self
-     */
-    public function setFilters(array $filters, bool $locked = false): ListConfigBuilderInterface;
-
-    /**
-     * Set filter source.
-     *
-     * @param string $source source of the filters (session, get)
-     *
-     * @return self
-     */
-    public function setFilterSource(string $source): ListConfigBuilderInterface;
-
-    /**
-     * Set list page.
-     *
-     * @param int $page
-     *
-     * @return self
-     */
-    public function setPage(int $page): ListConfigBuilderInterface;
-
-    /**
-     * Set request query page parameter name.
+     * Sets request query page parameter name.
      *
      * @param string|null $name query parameter name
-     *
-     * @return self
      */
-    public function setPageParam(?string $name): ListConfigBuilderInterface;
+    public function setPageParam(?string $name): self;
 
     /**
-     * Set default list sorter.
+     * Sets default list sorter.
      *
-     * The sorter can be overriden by HTTP query
-     * sorter parameters defined by setSorterParams method.
+     * The sorter can be override by HTTP query
+     * sorter parameters defined by setSorterParam method.
      *
-     * @param string $name name of the sorter
-     * @param string $type type of sorter (asc or desc)
-     *
-     * @return self
+     * @param string|null $name name of the sorter
+     * @param string|null $type type of sorter (asc or desc)
      */
-    public function setSorter(?string $name, ?string $type): ListConfigBuilderInterface;
+    public function setSorter(?string $name, ?string $type): self;
 
     /**
-     * Set names of asc and desc HTTP query parameters.
-     *
-     * @param string $asc  query parameter name
-     * @param string $desc query parameter name
-     *
-     * @return self
+     * Sets names of sorter HTTP query parameters.
      */
-    public function setSorterParams(?string $asc, ?string $desc): ListConfigBuilderInterface;
+    public function setSorterParam(?string $sorterParam): self;
 
     /**
-     * Set limit of objects per page.
-     *
-     * @param int $limit
-     *
-     * @return self
+     * Sets name of filters HTTP query parameters.
      */
-    public function setLimit(int $limit): ListConfigBuilderInterface;
+    public function setFiltersParam(?string $filtersParam): self;
 
     /**
-     * Set request query limit parameter name.
+     * Sets limit of objects per page.
+     */
+    public function setLimit(int $limit): self;
+
+    /**
+     * Sets request query limit parameter name.
      *
      * @param string|null $name    query parameter name
      * @param array       $options min and max option
-     *
-     * @return self
      */
-    public function setLimitParam(?string $name, array $options = array()): ListConfigBuilderInterface;
+    public function setLimitParam(?string $name, array $options = array()): self;
 
     /**
-     * Set action param name.
-     *
-     * @param string|null $name parameter name
-     *
-     * @return self
+     * Sets if list should persist its state.
      */
-    public function setActionParam(?string $name): ListConfigBuilderInterface;
+    public function setPersistState(bool $persist): self;
 
     /**
-     * Set list repository.
-     *
-     * @param AbstractRepository $repository
-     *
-     * @return self
+     * Sets list repository.
      */
-    public function setRepository(AbstractRepository $repository): ListConfigBuilderInterface;
+    public function setRepository(string $repositoryClass, array $options = array()): self;
+
+    /**
+     * Sets state provider.
+     */
+    public function setStateProvider(string $stateProvider): self;
+
+    /**
+     * Sets type the list was created from.
+     */
+    public function setType(ListTypeInterface $type): self;
+
+    /**
+     * Sets type options.
+     */
+    public function setOptions(array $options): self;
 }

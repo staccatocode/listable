@@ -9,8 +9,15 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Staccato\Component\Listable\Exception;
+namespace Staccato\Component\Listable;
 
-class ClassNotFoundException extends \RuntimeException
+interface ListStateInterface
 {
+    public function getPage(): int;
+
+    public function getLimit(): int;
+
+    public function getFilters(): array;
+
+    public function getSorter(): array;
 }

@@ -9,8 +9,12 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Staccato\Component\Listable\Repository\Exception;
+namespace Staccato\Component\Listable\Filter;
 
-class InvalidRepositoryFactoryException extends \UnexpectedValueException
+class TextFilter extends AbstractFilter
 {
+    public function isValid($value): bool
+    {
+        return \is_string($value);
+    }
 }

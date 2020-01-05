@@ -11,57 +11,40 @@
 
 namespace Staccato\Component\Listable;
 
-interface ListInterface extends ListConfigInterface
+interface ListInterface
 {
     /**
-     * Return loaded data.
-     *
-     * @return array|Traversable
+     * Return data loaded from list repository.
      */
-    public function getData();
+    public function getData(): iterable;
 
     /**
-     * Return currently loaded page number.
-     *
-     * @return int
+     * Return list state.
+     */
+    public function getState(): ListStateInterface;
+
+    /**
+     * Return list config.
+     */
+    public function getConfig(): ListConfigInterface;
+
+    /**
+     * Return number of data page loaded from repository.
      */
     public function getPage(): int;
 
     /**
-     * Return total number of pages.
-     *
-     * @return int
+     * Return total number of pages found in repository.
      */
-    public function countPages(): int;
+    public function getTotalPages(): int;
 
     /**
-     * Return total number of rows.
-     *
-     * @return int
+     * Return total number of elements in repository.
      */
-    public function count(): int;
-
-    /**
-     * Loads list data.
-     *
-     * @return ListInterface self
-     */
-    public function load(): ListInterface;
-
-    /**
-     * Handle actions on list.
-     *
-     * @param string   $action  action name
-     * @param callable $handler callable action handler
-     *
-     * @return ListInterface self
-     */
-    public function on(string $action, callable $handler): ListInterface;
+    public function getTotalCount(): int;
 
     /**
      * Return instance of list view object.
-     *
-     * @return ListView
      */
     public function createView(): ListView;
 }

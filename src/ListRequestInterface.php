@@ -18,8 +18,6 @@ interface ListRequestInterface
      *
      * @param string $paramName query page parameter name
      * @param int    $default   query page parameter not exists
-     *
-     * @return int
      */
     public function getPage(string $paramName, int $default = 0): int;
 
@@ -28,38 +26,22 @@ interface ListRequestInterface
      *
      * @param string $paramName query limit parameter name
      * @param int    $default   query limit parameter not exists
-     *
-     * @return int
      */
     public function getLimit(string $paramName, int $default = 0): int;
 
     /**
      * Return filters associated to the list.
      *
-     * @param string $paramName   name of the list
-     * @param string $filterSoure source of the filter (session, get)
-     *
-     * @return array
+     * @param string $paramName name of the list
+     * @param array  $default   default value if filters not set
      */
-    public function getFilters(string $paramName, string $filterSource): array;
+    public function getFilters(string $paramName, array $default): array;
 
     /**
      * Return sorter values.
      *
-     * @param string $paramAsc  query name of ascending parameter
-     * @param string $paramDesc query name of descending parameter
-     *
-     * @return array
+     * @param string $paraName query name of sort parameter
+     * @param array  $default  default value if sorter not set
      */
-    public function getSorter(string $paramAsc, string $paramDesc): array;
-
-    /**
-     * Store filters in filters storage.
-     *
-     * @param string $paramName list name associated to filters
-     * @param array  $filters   filters to be stored
-     *
-     * @return self
-     */
-    public function storeFilters(string $paramName, array $filters): ListRequestInterface;
+    public function getSorter(string $paraName, array $default): array;
 }

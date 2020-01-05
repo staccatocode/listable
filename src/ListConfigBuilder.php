@@ -11,113 +11,109 @@
 
 namespace Staccato\Component\Listable;
 
+use Staccato\Component\Listable\Field\AbstractField;
+use Staccato\Component\Listable\Filter\AbstractFilter;
 use Staccato\Component\Listable\Repository\AbstractRepository;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class ListConfigBuilder implements ListConfigBuilderInterface
+class ListConfigBuilder implements ListConfigBuilderInterface, \JsonSerializable
 {
     /**
-     * Repository that will be used to
-     * load data to the list.
-     *
-     * @var AbstractRepository
+     * @var ListRegistryInterface
      */
-    protected $repository;
+    protected $registry;
 
     /**
-     * Name (ID) of the list.
-     *
+     * @var AbstractRepository
+     */
+    private $repository;
+
+    /**
      * @var string
      */
     private $name = 'list';
 
     /**
-     * Page of the list.
-     *
+     * @var array
+     */
+    private $options = array();
+
+    /**
      * @var int
      */
     private $page = 0;
 
     /**
-     * Name of query page parameter for the list.
-     *
-     * @var string
+     * @var string|null
      */
-    private $pageParam = '';
+    private $pageParam;
 
     /**
-     * Limit of objects per page that
-     * will be passed to the repository.
-     *
      * @var int
      */
     private $limit = 0;
 
     /**
-     * Name of query limit parameter for the list.
-     *
-     * @var string
-     */
-    private $limitParam = '';
-
-    /**
-     * Limit min and max options.
-     *
-     * @var array
-     */
-    private $limitParamOptions = array();
-
-    /**
-     * Filters that will be passed to the repository.
-     *
-     * @var array
-     */
-    private $filters = array();
-
-    /**
-     * Filters that will be not overriden by
-     * request filters.
-     *
-     * @var array
-     */
-    private $filtersLock = array();
-
-    /**
-     * Filters source.
-     *
-     * @var string
-     */
-    private $filterSource = 'get';
-
-    /**
-     * Sorter that will be passed to the repository.
-     *
      * @var array
      */
     private $sorter = array();
 
     /**
-     * Sorter query parameters names for the list.
-     *
-     * @var array
+     * @var string|null
      */
-    private $sorterParams = array(
-        'asc' => '',
-        'desc' => '',
-    );
+    private $sorterParam;
 
     /**
-     * Action param name.
-     *
+     * @var string|null
+     */
+    private $limitParam;
+
+    /**
+     * @var array
+     */
+    private $limitParamOptions = array();
+
+    /**
+     * @var AbstractFilter[]
+     */
+    private $filters = array();
+
+    /**
+     * @var string|null
+     */
+    private $filtersParam;
+
+    /**
+     * @var AbstractField[]
+     */
+    private $fields = array();
+
+    /**
      * @var string
      */
-    private $actionParam = 'st_list';
+    private $stateProvider = ListStateProvider::class;
+
+    /**
+     * @var bool
+     */
+    private $persistState = false;
+
+    /**
+     * @var ListTypeInterface|null;
+     */
+    private $type;
+
+    public function __construct(ListRegistryInterface $registry)
+    {
+        $this->registry = $registry;
+    }
 
     /**
      * {@inheritdoc}
      */
     public function getName(): string
     {
-        return (string) $this->name;
+        return $this->name;
     }
 
     /**
@@ -133,17 +129,53 @@ class ListConfigBuilder implements ListConfigBuilderInterface
     /**
      * {@inheritdoc}
      */
-    public function getFilterSource(): string
+    public function setFiltersParam(?string $filtersParam): ListConfigBuilderInterface
     {
-        return (string) $this->filterSource;
+        $this->filtersParam = $filtersParam;
+
+        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setFilterSource(string $source): ListConfigBuilderInterface
+    public function getFiltersParam(): string
     {
-        $this->filterSource = strtolower($source);
+        return (string) $this->filtersParam;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSorterParam(): string
+    {
+        return (string) $this->sorterParam;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setSorterParam(?string $sorterParam): ListConfigBuilderInterface
+    {
+        $this->sorterParam = (string) $sorterParam;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getOptions(): array
+    {
+        return $this->options;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setOptions(array $options): ListConfigBuilderInterface
+    {
+        $this->options = $options;
 
         return $this;
     }
@@ -159,19 +191,19 @@ class ListConfigBuilder implements ListConfigBuilderInterface
     /**
      * {@inheritdoc}
      */
-    public function getPageParam(): string
-    {
-        return (string) $this->pageParam;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function setPage(int $page): ListConfigBuilderInterface
     {
         $this->page = $page > 0 ? $page : 0;
 
         return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPageParam(): string
+    {
+        return (string) $this->pageParam;
     }
 
     /**
@@ -189,21 +221,13 @@ class ListConfigBuilder implements ListConfigBuilderInterface
      */
     public function getLimit(): int
     {
-        $min = isset($this->limitParamOptions['min']) ? (int) $this->limitParamOptions['min'] : 0;
-        $max = isset($this->limitParamOptions['max']) ? (int) $this->limitParamOptions['max'] : (int) $this->limit;
+        $min = $this->limitParamOptions['min'] ?? 0;
+        $max = $this->limitParamOptions['max'] ?? $this->limit;
 
-        $limit = max((int) $this->limit, $min);
+        $limit = max($this->limit, $min);
         $limit = min($limit, $max);
 
         return $limit;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getLimitParam(): string
-    {
-        return (string) $this->limitParam;
     }
 
     /**
@@ -219,49 +243,36 @@ class ListConfigBuilder implements ListConfigBuilderInterface
     /**
      * {@inheritdoc}
      */
+    public function getLimitParam(): string
+    {
+        return (string) $this->limitParam;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLimitParamOptions(): array
+    {
+        return $this->limitParamOptions;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function setLimitParam(?string $name, array $options = array()): ListConfigBuilderInterface
     {
+        $resolver = new OptionsResolver();
+        $resolver
+            ->setDefaults(array(
+                'min' => null,
+                'max' => null,
+            ))
+            ->setAllowedTypes('min', array('int', 'null'))
+            ->setAllowedTypes('max', array('int', 'null'))
+        ;
+
         $this->limitParam = (string) $name;
-        $this->limitParamOptions = $options;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSorterParams(): array
-    {
-        return $this->sorterParams;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setSorterParams(?string $asc, ?string $desc): ListConfigBuilderInterface
-    {
-        $this->sorterParams = array(
-            'asc' => (string) $asc,
-            'desc' => (string) $desc,
-        );
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getActionParam(): string
-    {
-        return $this->actionParam;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setActionParam(?string $name): ListConfigBuilderInterface
-    {
-        $this->actionParam = (string) $name;
+        $this->limitParamOptions = $resolver->resolve($options);
 
         return $this;
     }
@@ -271,22 +282,12 @@ class ListConfigBuilder implements ListConfigBuilderInterface
      */
     public function setSorter(?string $name, ?string $type): ListConfigBuilderInterface
     {
-        $this->sorter = array(
-            'name' => (string) $name,
-            'type' => strtolower($type),
-        );
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setFilter(string $name, $value, bool $locked = false): ListConfigBuilderInterface
-    {
-        if (!$this->isFilterLocked($name)) {
-            $this->filters[$name] = $value;
-            $this->filtersLock[$name] = $locked;
+        if (null === $name) {
+            $this->sorter = array();
+        } elseif (null === $type) {
+            unset($this->sorter[$name]);
+        } else {
+            $this->sorter[$name] = strtolower($type);
         }
 
         return $this;
@@ -295,11 +296,19 @@ class ListConfigBuilder implements ListConfigBuilderInterface
     /**
      * {@inheritdoc}
      */
-    public function setFilters(array $filters, bool $locked = false): ListConfigBuilderInterface
+    public function getSorter(): array
     {
-        foreach ($filters as $name => $value) {
-            $this->setFilter($name, $value, $locked);
-        }
+        return $this->sorter;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setFilter(string $name, string $type, array $options = array()): ListConfigBuilderInterface
+    {
+        $filter = $this->registry->getFilterType($type)->setOptions($options);
+
+        $this->filters[$filter->getField() ?? $name] = $filter;
 
         return $this;
     }
@@ -307,12 +316,69 @@ class ListConfigBuilder implements ListConfigBuilderInterface
     /**
      * {@inheritdoc}
      */
-    public function getOptions(): array
+    public function setField(string $name, string $type, array $options = array()): ListConfigBuilderInterface
     {
-        return array(
-            'filters' => $this->filters,
-            'sorter' => $this->sorter,
-        );
+        $field = $this->registry->getFieldType($type)->setOptions($options);
+
+        if ($field->hasFilter()) {
+            $this->setFilter($name, $field->getFilter(), array('field' => $name) + $field->getFilterOptions());
+        }
+
+        $this->fields[$name] = $field;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getFilters(): array
+    {
+        return $this->filters;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getFields(): array
+    {
+        return $this->fields;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getStateProvider(): string
+    {
+        return $this->stateProvider;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setStateProvider(string $stateProvider): ListConfigBuilderInterface
+    {
+        $this->stateProvider = $stateProvider;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPersistState(): bool
+    {
+        return $this->persistState;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setPersistState(bool $persist): ListConfigBuilderInterface
+    {
+        $this->persistState = $persist;
+
+        return $this;
     }
 
     /**
@@ -326,9 +392,27 @@ class ListConfigBuilder implements ListConfigBuilderInterface
     /**
      * {@inheritdoc}
      */
-    public function setRepository(AbstractRepository $repository): ListConfigBuilderInterface
+    public function setRepository(string $repositoryClass, array $options = array()): ListConfigBuilderInterface
     {
-        $this->repository = $repository;
+        $this->repository = $this->registry->getRepository($repositoryClass, $options);
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getType(): ?ListTypeInterface
+    {
+        return $this->type;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setType(ListTypeInterface $type): ListConfigBuilderInterface
+    {
+        $this->type = $type;
 
         return $this;
     }
@@ -342,15 +426,30 @@ class ListConfigBuilder implements ListConfigBuilderInterface
     }
 
     /**
-     * Check whether filter is locked.
-     *
-     * @param string $name The name of the filter
-     *
-     * @return bool
+     * {@inheritdoc}
      */
-    protected function isFilterLocked(string $name): bool
+    public function jsonSerialize()
     {
-        return isset($this->filtersLock[$name]) &&
-                     $this->filtersLock[$name] ? true : false;
+        $fields = array();
+        $filters = array();
+
+        foreach ($this->getFilters() as $key => $filter) {
+            $filters[$key] = $filter->getOptions();
+        }
+
+        foreach ($this->getFields() as $key => $field) {
+            $fields[$key] = $field->getOptions();
+        }
+
+        return array(
+            'name' => $this->getName(),
+            'persist_state' => $this->getPersistState(),
+            'page_param' => $this->getPageParam(),
+            'limit_param' => $this->getLimitParam(),
+            'limit_param_options' => $this->getLimitParamOptions(),
+            'filters_param' => $this->getFiltersParam(),
+            'fields' => $fields,
+            'filters' => $filters,
+        );
     }
 }

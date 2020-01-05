@@ -11,14 +11,14 @@
 
 namespace Staccato\Component\Listable;
 
+use Staccato\Component\Listable\Field\AbstractField;
+use Staccato\Component\Listable\Filter\AbstractFilter;
 use Staccato\Component\Listable\Repository\AbstractRepository;
 
 interface ListConfigInterface
 {
     /**
      * Returns name (ID) of the list.
-     *
-     * @return string
      */
     public function getName(): string;
 
@@ -31,57 +31,70 @@ interface ListConfigInterface
 
     /**
      * Returns HTTP query page name parameter.
-     *
-     * @return string
      */
     public function getPageParam(): string;
 
     /**
-     * Returns filter source.
-     *
-     * @return string
+     * Returns sorter HTTP query parameter name.
      */
-    public function getFilterSource(): string;
+    public function getSorterParam(): string;
 
     /**
-     * Returns asc and desc parameter names.
-     *
-     * @return array
+     * Returns sorter HTTP query parameters.
      */
-    public function getSorterParams(): array;
+    public function getSorter(): array;
 
     /**
      * Returns limit of rows per page.
-     *
-     * @return int
      */
     public function getLimit(): int;
 
     /**
      * Returns HTTP query limit name parameter.
-     *
-     * @return string
      */
     public function getLimitParam(): string;
 
     /**
-     * Returns HTTP action param name.
-     *
-     * @return string
+     * Returns additional limit param options like min and max allowed value.
      */
-    public function getActionParam(): string;
+    public function getLimitParamOptions(): array;
+
+    /**
+     * Returns HTTP query filters name parameter.
+     */
+    public function getFiltersParam(): string;
+
+    /**
+     * Return filters definition.
+     *
+     * @return AbstractFilter[]
+     */
+    public function getFilters(): array;
+
+    /**
+     * Return filters definition.
+     *
+     * @return AbstractField[]
+     */
+    public function getFields(): array;
+
+    /**
+     * Returns persist state.
+     */
+    public function getPersistState(): bool;
 
     /**
      * Returns currently set list repository.
-     *
-     * @return AbstractRepository|null
      */
     public function getRepository(): ?AbstractRepository;
 
     /**
-     * Returns filters and sorter.
-     *
-     * return array
+     * Returns type list was created from.
+     */
+    public function getType(): ?ListTypeInterface;
+
+    /**
+     * Return list type options.
      */
     public function getOptions(): array;
 }

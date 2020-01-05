@@ -14,17 +14,27 @@ namespace Staccato\Component\Listable;
 interface ListBuilderInterface extends ListConfigBuilderInterface
 {
     /**
-     * Create new list based on current builder
-     * configuration.
-     *
-     * @return ListInterface
+     * Add element (filter, field) to builder.
+     */
+    public function add(string $name, string $type, array $options = array()): self;
+
+    /**
+     * Check if builder already has element (filter, field).
+     */
+    public function has(string $name): bool;
+
+    /**
+     * Remove element (filter, field) from builder.
+     */
+    public function remove(string $name): self;
+
+    /**
+     * Create new list based on current builder configuration.
      */
     public function getList(): ListInterface;
 
     /**
      * Return list config.
-     *
-     * @return ListConfigInterface
      */
     public function getListConfig(): ListConfigInterface;
 }

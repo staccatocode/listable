@@ -11,101 +11,133 @@
 
 namespace Staccato\Component\Listable;
 
-use Staccato\Component\Listable\Repository\AbstractRepository;
-use Staccato\Component\Listable\Repository\Exception\InvalidRepositoryException;
+use Staccato\Component\Listable\Exception\InvalidArgumentException;
+use Staccato\Component\Listable\Repository\Result;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 class ListBuilder extends ListConfigBuilder implements ListBuilderInterface
 {
-    /**
-     * The list's request.
-     *
-     * @var ListRequestInterface
-     */
-    protected $listRequest;
+    /** @var array */
+    private $elements = array();
 
     /**
-     * @param ListRequestInterface $listRequest The list request object
+     * {@inheritdoc}
      */
-    public function __construct(ListRequestInterface $listRequest)
+    public function add(string $name, string $type, array $options = array()): ListBuilderInterface
     {
-        $this->listRequest = $listRequest;
-        $this->setSorter(null, null);
+        $this->elements[$name] = [$type, $options];
+
+        return $this;
     }
 
     /**
      * {@inheritdoc}
-     *
-     * @throws InvalidRepositoryException
+     */
+    public function has(string $name): bool
+    {
+        return array_key_exists($name, $this->elements);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function remove(string $name): ListBuilderInterface
+    {
+        if ($this->has($name)) {
+            unset($this->elements[$name]);
+        }
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function getList(): ListInterface
     {
+        $this->resolveElements();
+
+        $state = $this->getState();
+        $list = new Listable($this->getListConfig(), $state);
+
         $repository = $this->getRepository();
-
-        if (!$repository instanceof AbstractRepository) {
-            throw new InvalidRepositoryException(sprintf(
-                'Repository must be instance of `%s` instance of `%s` given.',
-                AbstractRepository::class, null === $repository ? 'NULL' : get_class($repository)
-            ));
+        if (!$repository) {
+            return $list;
         }
 
-        if ('' !== $this->getPageParam()) {
-            $this->setPage($this->listRequest->getPage($this->getPageParam(), $this->getPage()));
-        }
+        do {
+            $result = $repository->getResult($state);
 
-        if ('' !== $this->getLimitParam()) {
-            $this->setLimit($this->listRequest->getLimit($this->getLimitParam(), $this->getLimit()));
-        }
+            $list
+                ->setTotalCount($result->getTotalCount())
+                ->setData($this->getDataFromResult($result))
+            ;
 
-        $this->mergeOptions();
+            if ($state->getLimit()) {
+                $list->setTotalPages(ceil($result->getTotalCount() / $state->getLimit()));
+            } else {
+                $list->setTotalPages($list->getTotalCount() > 0 ? 1 : 0);
+            }
 
-        $list = $this->createList();
-        $list->load();
+            $list->setPage(min($list->getTotalPages() > 0 ? $list->getTotalPages() - 1 : 0, $state->getPage()));
+
+            $pageOverflow = $list->checkPageOverflow();
+            if ($pageOverflow) {
+                $state->setPage($list->getPage());
+            }
+        } while ($pageOverflow);
 
         return $list;
     }
 
-    /**
-     * Create new instance of list.
-     *
-     * @return ListObject
-     */
-    protected function createList()
+    private function getState()
     {
-        return new ListObject($this->getListConfig());
+        $state = $this->registry->getStateProvider($this->getStateProvider())->getState($this);
+
+        $options = $this->getLimitParamOptions();
+        $min = $options['min'] ?? 0;
+        $max = $options['max'] ?? $state->getLimit();
+
+        $state->setLimit(min(max($state->getLimit(), $min), $max));
+
+        return $state;
     }
 
-    /**
-     * Merge filters and sorter options from
-     * builder and list request.
-     *
-     * @return self
-     */
-    protected function mergeOptions()
+    private function getDataFromResult(Result $result): array
     {
-        $options = $this->getOptions();
-        $sorter = $options['sorter'];
-        $sorterNames = $this->getSorterParams();
-
-        $this->setFilters($this->listRequest->getFilters(
-            $this->getName(),
-            $this->getFilterSource()
-        ));
-
-        $requestSorter = $this->listRequest->getSorter(
-            isset($sorterNames['asc']) ? $sorterNames['asc'] : 'asc',
-            isset($sorterNames['desc']) ? $sorterNames['desc'] : 'desc'
-        );
-
-        if (isset($requestSorter['name'])) {
-            $sorter['name'] = $requestSorter['name'];
+        $propertyAccessor = new PropertyAccessor();
+        $data = array();
+        foreach ($result->getRows() as $item) {
+            $row = array();
+            $propertyPathFormat = \is_array($item) || $item instanceof \ArrayAccess ? '[%s]' : '%s';
+            foreach ($this->getFields() as $name => $field) {
+                $propertyPath = $field->getPropertyPath() ?? sprintf($propertyPathFormat, $name);
+                $row[$name] = $propertyAccessor->getValue($item, $propertyPath);
+            }
+            $data[] = $row;
         }
 
-        if (isset($requestSorter['type'])) {
-            $sorter['type'] = $requestSorter['type'];
+        return $data;
+    }
+
+    private function resolveElements(): void
+    {
+        foreach ($this->elements as $name => [$type, $options]) {
+            try {
+                $this->setField($name, $type, $options);
+                unset($this->elements[$name]);
+                continue;
+            } catch (InvalidArgumentException $e) {
+            }
+
+            try {
+                $this->setFilter($name, $type, $options);
+                unset($this->elements[$name]);
+                continue;
+            } catch (InvalidArgumentException $e) {
+            }
+
+            throw new InvalidArgumentException(sprintf('Could not resolve unsupported element type `%s`.', $type));
         }
-
-        $this->setSorter($sorter['name'], $sorter['type']);
-
-        return $this;
     }
 }

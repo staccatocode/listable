@@ -12,17 +12,9 @@
 namespace Staccato\Component\Listable;
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Session;
 
 class ListRequest implements ListRequestInterface
 {
-    /**
-     * Session storage.
-     *
-     * @var Session
-     */
-    protected $session;
-
     /**
      * Request.
      *
@@ -30,10 +22,9 @@ class ListRequest implements ListRequestInterface
      */
     protected $request;
 
-    public function __construct()
+    public function __construct(?Request $request = null)
     {
-        $this->request = Request::createFromGlobals();
-        $this->session = new Session();
+        $this->request = $request ?? Request::createFromGlobals();
     }
 
     /**
@@ -61,49 +52,36 @@ class ListRequest implements ListRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function getFilters(string $paramName, string $filterSource): array
+    public function getFilters(string $paramName, array $defaultValue = array()): array
     {
-        $filters = array();
-        $filterSource = strtolower($filterSource);
+        $filters = $this->request->get($paramName, $defaultValue);
 
-        if ('session' === $filterSource) {
-            $filters = $this->session->get('st.list.'.$paramName, array());
-        } elseif ('get' === $filterSource) {
-            $filters = $this->request->query->get($paramName, array());
-        }
-
-        return $this->cleanFilters($filters);
+        return \is_array($filters) ? $this->cleanFilters($filters) : array();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getSorter(string $paramAsc, string $paramDesc): array
+    public function getSorter(string $paramName, array $defaultValue = array()): array
     {
-        $result = array(
-            'name' => null,
-            'type' => null,
-        );
+        $result = array();
+        $sorter = $this->request->query->get($paramName, $defaultValue);
 
-        if ($this->request->query->has($paramAsc)) {
-            $result['name'] = $this->request->query->get($paramAsc);
-            $result['type'] = 'asc';
-        } elseif ($this->request->query->has($paramDesc)) {
-            $result['name'] = $this->request->query->get($paramDesc);
-            $result['type'] = 'desc';
+        if (!\is_array($sorter)) {
+            return $result;
+        }
+
+        foreach ($sorter as $name => $direction) {
+            if (!\is_string($direction)) {
+                continue;
+            }
+            $direction = strtolower($direction);
+            if (\in_array($direction, array('asc', 'desc'))) {
+                $result[$name] = $direction;
+            }
         }
 
         return $result;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function storeFilters(string $paramName, array $filters): ListRequestInterface
-    {
-        $this->session->set('st.list.'.$paramName, $filters);
-
-        return $this;
     }
 
     /**
@@ -111,27 +89,23 @@ class ListRequest implements ListRequestInterface
      * Trim white chars and unset empty filters.
      *
      * @param array $filters array of filters
-     *
-     * @return array
      */
-    protected function cleanFilters($filters): array
+    private function cleanFilters(array $filters): array
     {
-        if (!is_array($filters)) {
-            return array();
-        }
-
-        array_walk_recursive($filters, function (&$item, $key) {
+        array_walk_recursive($filters, static function (&$item) {
             $item = trim($item);
         });
 
-        $filters = array_filter($filters, function (&$item) {
-            if (is_array($item)) {
-                $item = array_filter($item, 'strlen');
+        $filters = array_filter($filters, static function (&$item) {
+            if (\is_array($item)) {
+                $item = array_filter($item, static function ($val) {
+                    return (bool) \strlen($val);
+                });
 
                 return !empty($item);
             }
 
-            return strlen($item);
+            return \strlen($item);
         });
 
         return $filters;

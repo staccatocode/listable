@@ -11,16 +11,13 @@
 
 namespace Staccato\Component\Listable;
 
-class ListView implements \ArrayAccess, \IteratorAggregate, \Countable
+class ListView implements \ArrayAccess, \IteratorAggregate, \Countable, \JsonSerializable
 {
     /**
      * @var array
      */
     public $vars = array(
-        'name' => null,
-        'params' => array(),
         'data' => array(),
-        'options' => array(),
         'pagination' => array(
             'count' => 0,
             'total' => 0,
@@ -28,6 +25,8 @@ class ListView implements \ArrayAccess, \IteratorAggregate, \Countable
             'page' => 0,
             'limit' => 0,
         ),
+        'config' => array(),
+        'state' => array(),
     );
 
     /**
@@ -46,8 +45,6 @@ class ListView implements \ArrayAccess, \IteratorAggregate, \Countable
      * Returns whether the given data offset exists (implements \ArrayAccess).
      *
      * @param string|int $offset
-     *
-     * @return bool
      */
     public function offsetExists($offset): bool
     {
@@ -91,6 +88,16 @@ class ListView implements \ArrayAccess, \IteratorAggregate, \Countable
      */
     public function count(): int
     {
-        return count($this->vars['data']);
+        return \count($this->vars['data']);
+    }
+
+    /**
+     * Implements \JsonSerializable.
+     *
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        return $this->vars;
     }
 }

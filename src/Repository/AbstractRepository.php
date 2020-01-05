@@ -11,89 +11,37 @@
 
 namespace Staccato\Component\Listable\Repository;
 
+use Staccato\Component\Listable\ListStateInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+
 abstract class AbstractRepository
 {
     /**
-     * Ordering constant definitions.
-     */
-    const ORDER_ASC = 'asc';
-
-    const ORDER_DESC = 'desc';
-
-    /**
      * @var array
      */
-    protected $filters = array();
+    protected $options = array();
 
-    /**
-     * @var array
-     */
-    protected $sorter = array(
-        'name' => null,
-        'type' => self::ORDER_ASC,
-    );
-
-    /**
-     * Find matching objects and compose list.
-     *
-     * @param int $limit limit of objects per page (0 = no limit)
-     * @param int $page  find page
-     *
-     * @return mixed result set
-     */
-    abstract public function find(int $limit = 0, int $page = 0);
-
-    /**
-     * Count number of matching objects.
-     *
-     * @return int
-     */
-    abstract public function count(): int;
-
-    /**
-     * Set new list filter.
-     *
-     * @param string $name
-     * @param mixed  $value
-     *
-     * @return AbstractRepository self
-     */
-    public function filterBy(string $name, $value): AbstractRepository
+    public function setOptions(array $options): self
     {
-        $this->filters[$name] = $value;
+        $resolver = new OptionsResolver();
+        $this->configureOptions($resolver);
+
+        $this->options = $resolver->resolve($options);
 
         return $this;
     }
 
     /**
-     * Set list filters.
+     * Return result based on list state.
      *
-     * @param array $filters
-     *
-     * @return AbstractRepository self
+     * @param ListStateInterface $state the list state
      */
-    public function setFilters(array $filters): AbstractRepository
-    {
-        foreach ($filters as $f => $v) {
-            $this->filterBy($f, $v);
-        }
-
-        return $this;
-    }
+    abstract public function getResult(ListStateInterface $state): Result;
 
     /**
-     * Set list ordering.
-     *
-     * @param string|null $name sorter name or null to disable
-     * @param string      $type `asc` or `desc`
-     *
-     * @return AbstractRepository self
+     * Configure options for this repository using options resolver.
      */
-    public function orderBy(?string $name, string $type = self::ORDER_ASC): AbstractRepository
+    protected function configureOptions(OptionsResolver $optionsResolver): void
     {
-        $this->sorter['name'] = $name;
-        $this->sorter['type'] = $type;
-
-        return $this;
     }
 }
