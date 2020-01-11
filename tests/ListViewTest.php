@@ -27,7 +27,7 @@ class ListViewTest extends TestCase
 
     public function testArrayAccess(): void
     {
-        $data = array(1, 2, 3);
+        $data = [1, 2, 3];
 
         $view = new ListView();
 

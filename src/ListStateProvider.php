@@ -47,7 +47,7 @@ class ListStateProvider implements ListStateProviderInterface
         }
 
         $requestFilters = $this->request->getFilters($config->getFiltersParam(), $state->getFilters());
-        $filters = array();
+        $filters = [];
 
         foreach ($config->getFilters() as $name => $filter) {
             $value = $filter->isLocked() ? $filter->getData() : ($requestFilters[$name] ?? $filter->getData());
@@ -73,7 +73,7 @@ class ListStateProvider implements ListStateProviderInterface
 
     private function getSessionState(ListConfigInterface $config): ListState
     {
-        $data = $this->session->get($this->getSessionStateKey($config), array());
+        $data = $this->session->get($this->getSessionStateKey($config), []);
 
         $page = $config->getPageParam() ? $this->request->getPage($config->getPageParam(), $data['page'] ?? $config->getPage()) : $config->getPage();
         $limit = $config->getLimitParam() ? $this->request->getLimit($config->getLimitParam(), $data['limit'] ?? $config->getLimit()) : $config->getLimit();

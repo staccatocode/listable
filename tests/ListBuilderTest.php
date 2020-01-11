@@ -102,7 +102,7 @@ class ListBuilderTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Could not resolve unsupported element type `invalid_type`.');
 
-        $builder->add('a', 'invalid_type', array('x' => 1));
+        $builder->add('a', 'invalid_type', ['x' => 1]);
         $builder->getList();
     }
 
@@ -123,7 +123,7 @@ class ListBuilderTest extends TestCase
     public function testGetListWithRepository(): void
     {
         $result = new Result();
-        $result->setRows(array(1, 2, 3));
+        $result->setRows([1, 2, 3]);
         $result->setTotalCount(3);
 
         $state = new ListState(0, 10);
@@ -144,7 +144,7 @@ class ListBuilderTest extends TestCase
         ;
 
         $builder = new ListBuilder($this->registry);
-        $builder->setRepository(AbstractRepository::class, array('option' => 'test'));
+        $builder->setRepository(AbstractRepository::class, ['option' => 'test']);
         $list = $builder->getList();
 
         $this->assertInstanceOf(ListInterface::class, $list);
@@ -153,23 +153,23 @@ class ListBuilderTest extends TestCase
     public function testFieldPropertyPath()
     {
         $builder = new ListBuilder(new ListRegistry());
-        $builder->setRepository(FakeRepository::class, array('data' => array(
-            array('a' => 1, 'b' => new \stdClass()),
-            array('a' => 2, 'b' => new \stdClass()),
-        )));
+        $builder->setRepository(FakeRepository::class, ['data' => [
+            ['a' => 1, 'b' => new \stdClass()],
+            ['a' => 2, 'b' => new \stdClass()],
+        ]]);
         $builder->add('a', TextField::class);
-        $builder->add('b', TextField::class, array(
+        $builder->add('b', TextField::class, [
             'property_path' => '[a]',
-        ));
-        $builder->add('c', TextField::class, array(
+        ]);
+        $builder->add('c', TextField::class, [
             'property_path' => '[b].test',
-        ));
+        ]);
         $list = $builder->getList();
 
-        $this->assertEquals(array(
-            array('a' => 1, 'b' => 1, 'c' => null),
-            array('a' => 2, 'b' => 2, 'c' => null),
-        ), $list->getData());
+        $this->assertEquals([
+            ['a' => 1, 'b' => 1, 'c' => null],
+            ['a' => 2, 'b' => 2, 'c' => null],
+        ], $list->getData());
     }
 
     /**
@@ -187,15 +187,15 @@ class ListBuilderTest extends TestCase
 
     public function testPageOverflow(): void
     {
-        $data = array(
-            array('test_field' => 1),
-            array('test_field' => 2),
-            array('test_field' => 3),
-        );
+        $data = [
+            ['test_field' => 1],
+            ['test_field' => 2],
+            ['test_field' => 3],
+        ];
 
         $registry = new ListRegistry();
         $builder = new ListBuilder($registry);
-        $builder->setRepository(FakeRepository::class, array('data' => $data));
+        $builder->setRepository(FakeRepository::class, ['data' => $data]);
         $builder->add('test_field', TextField::class);
         $builder->add('test_filter', TextFilter::class);
         $builder->setLimit(1);
@@ -206,6 +206,6 @@ class ListBuilderTest extends TestCase
         $this->assertSame(\count($data), $list->getTotalCount());
         $this->assertSame(2, $list->getPage());
         $this->assertSame(3, $list->getTotalPages());
-        $this->assertSame(array(array('test_field' => 3)), $list->getData());
+        $this->assertSame([['test_field' => 3]], $list->getData());
     }
 }

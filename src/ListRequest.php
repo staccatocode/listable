@@ -52,19 +52,19 @@ class ListRequest implements ListRequestInterface
     /**
      * {@inheritdoc}
      */
-    public function getFilters(string $paramName, array $defaultValue = array()): array
+    public function getFilters(string $paramName, array $defaultValue = []): array
     {
         $filters = $this->request->get($paramName, $defaultValue);
 
-        return \is_array($filters) ? $this->cleanFilters($filters) : array();
+        return \is_array($filters) ? $this->cleanFilters($filters) : [];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getSorter(string $paramName, array $defaultValue = array()): array
+    public function getSorter(string $paramName, array $defaultValue = []): array
     {
-        $result = array();
+        $result = [];
         $sorter = $this->request->query->get($paramName, $defaultValue);
 
         if (!\is_array($sorter)) {
@@ -76,7 +76,7 @@ class ListRequest implements ListRequestInterface
                 continue;
             }
             $direction = strtolower($direction);
-            if (\in_array($direction, array('asc', 'desc'))) {
+            if (\in_array($direction, ['asc', 'desc'])) {
                 $result[$name] = $direction;
             }
         }

@@ -37,13 +37,13 @@ class AbstractRepositoryTest extends TestCase
             {
                 parent::configureOptions($optionsResolver);
 
-                $optionsResolver->setDefaults(array(
+                $optionsResolver->setDefaults([
                     'test' => true,
-                ));
+                ]);
             }
         };
 
-        $repository->setOptions(array('test' => false));
+        $repository->setOptions(['test' => false]);
 
         $this->assertInstanceOf(AbstractRepository::class, $repository);
         $this->assertInstanceOf(Result::class, $repository->getResult($state));

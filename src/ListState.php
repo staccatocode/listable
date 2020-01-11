@@ -26,12 +26,12 @@ class ListState implements ListStateInterface, \JsonSerializable
     /**
      * @var array
      */
-    private $filters = array();
+    private $filters = [];
 
     /**
      * @var array
      */
-    private $sorter = array();
+    private $sorter = [];
 
     public function __construct(int $page, int $limit)
     {
@@ -92,12 +92,12 @@ class ListState implements ListStateInterface, \JsonSerializable
 
     public function toArray(): array
     {
-        return array(
+        return [
             'page' => $this->getPage(),
             'limit' => $this->getLimit(),
             'filters' => $this->getFilters(),
             'sorter' => $this->getSorter(),
-        );
+        ];
     }
 
     public function fromArray(array $data): self

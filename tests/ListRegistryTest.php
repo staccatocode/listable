@@ -44,13 +44,13 @@ class ListRegistryTest extends TestCase
 
         $mockListType = $this->getMockBuilder(FakeListType::class)->getMock();
 
-        $registry = new ListRegistry(array(
-            ListTypeInterface::class => new ServiceLocator(array(
+        $registry = new ListRegistry([
+            ListTypeInterface::class => new ServiceLocator([
                 FakeListType::class => static function () use ($mockListType) {
                     return $mockListType;
-                }, ),
+                }, ],
             ),
-        ));
+        ]);
 
         $this->assertSame($mockListType, $registry->getListType(FakeListType::class));
     }
@@ -62,13 +62,13 @@ class ListRegistryTest extends TestCase
 
         $mockFieldType = $this->getMockBuilder(TextField::class)->getMock();
 
-        $registry = new ListRegistry(array(
-            AbstractField::class => new ServiceLocator(array(
+        $registry = new ListRegistry([
+            AbstractField::class => new ServiceLocator([
                 TextField::class => static function () use ($mockFieldType) {
                     return $mockFieldType;
-                }, ),
+                }, ],
             ),
-        ));
+        ]);
 
         $this->assertSame($mockFieldType, $registry->getFieldType(TextField::class));
     }
@@ -80,13 +80,13 @@ class ListRegistryTest extends TestCase
 
         $mockFilterType = $this->getMockBuilder(TextFilter::class)->getMock();
 
-        $registry = new ListRegistry(array(
-            AbstractFilter::class => new ServiceLocator(array(
+        $registry = new ListRegistry([
+            AbstractFilter::class => new ServiceLocator([
                 TextFilter::class => static function () use ($mockFilterType) {
                     return $mockFilterType;
-                }, ),
+                }, ],
             ),
-        ));
+        ]);
 
         $this->assertSame($mockFilterType, $registry->getFilterType(TextFilter::class));
     }
@@ -98,13 +98,13 @@ class ListRegistryTest extends TestCase
 
         $mockStateProvider = $this->getMockBuilder(ListStateProvider::class)->getMock();
 
-        $registry = new ListRegistry(array(
-            ListStateProviderInterface::class => new ServiceLocator(array(
+        $registry = new ListRegistry([
+            ListStateProviderInterface::class => new ServiceLocator([
                 ListStateProvider::class => static function () use ($mockStateProvider) {
                     return $mockStateProvider;
-                }, ),
+                }, ],
             ),
-        ));
+        ]);
 
         $this->assertSame($mockStateProvider, $registry->getStateProvider(ListStateProvider::class));
     }
@@ -114,7 +114,7 @@ class ListRegistryTest extends TestCase
         $registry = new ListRegistry();
         $this->assertInstanceOf(FakeRepository::class, $registry->getRepository(FakeRepository::class));
 
-        $mockRepositoryOptions = array('a' => 1, 'b' => false);
+        $mockRepositoryOptions = ['a' => 1, 'b' => false];
         $mockRepository = $this->getMockBuilder(AbstractRepository::class)->getMock();
         $mockRepository
             ->method('setOptions')
@@ -122,13 +122,13 @@ class ListRegistryTest extends TestCase
             ->willReturnSelf()
         ;
 
-        $registry = new ListRegistry(array(
-            AbstractRepository::class => new ServiceLocator(array(
+        $registry = new ListRegistry([
+            AbstractRepository::class => new ServiceLocator([
                 AbstractRepository::class => static function () use ($mockRepository) {
                     return $mockRepository;
-                }, ),
+                }, ],
             ),
-        ));
+        ]);
 
         $this->assertSame($mockRepository, $registry->getRepository(AbstractRepository::class, $mockRepositoryOptions));
     }

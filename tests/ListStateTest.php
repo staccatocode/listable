@@ -38,20 +38,20 @@ class ListStateTest extends TestCase
         $state->setLimit(20);
         $this->assertSame(20, $state->getLimit());
 
-        $this->assertSame(array(), $state->getSorter());
-        $state->setSorter(array('a' => 1, 'b' => 2));
-        $this->assertSame(array('a' => 1, 'b' => 2), $state->getSorter());
+        $this->assertSame([], $state->getSorter());
+        $state->setSorter(['a' => 1, 'b' => 2]);
+        $this->assertSame(['a' => 1, 'b' => 2], $state->getSorter());
 
-        $this->assertSame(array(), $state->getFilters());
-        $state->setFilters(array('a' => 1));
-        $this->assertSame(array('a' => 1), $state->getFilters());
+        $this->assertSame([], $state->getFilters());
+        $state->setFilters(['a' => 1]);
+        $this->assertSame(['a' => 1], $state->getFilters());
 
-        $data = array(
+        $data = [
             'page' => 99,
             'limit' => 99,
-            'filters' => array('y' => 1),
-            'sorter' => array('x' => 'asc'),
-        );
+            'filters' => ['y' => 1],
+            'sorter' => ['x' => 'asc'],
+        ];
 
         $state->fromArray($data);
 

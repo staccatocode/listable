@@ -33,7 +33,7 @@ class ListFactory
         $this->registry = $registry ?? new ListRegistry();
     }
 
-    public function create(string $listType, array $options = array()): ListInterface
+    public function create(string $listType, array $options = []): ListInterface
     {
         $optionsResolver = $this->getOptionsResolver();
 
@@ -56,7 +56,7 @@ class ListFactory
             ->setOptions($options)
             ->setName($options['name'])
             ->setLimit($options['limit'])
-            ->setLimitParam($options['limit_param'], $options['limit_param_options'] ?? array())
+            ->setLimitParam($options['limit_param'], $options['limit_param_options'] ?? [])
             ->setPageParam($options['page_param'])
             ->setSorterParam($options['sorter_param'])
             ->setFiltersParam($options['filters_param'])
@@ -71,7 +71,7 @@ class ListFactory
     {
         $resolver = new OptionsResolver();
         $resolver
-            ->setDefaults(array(
+            ->setDefaults([
                 'name' => $this->getDefaultListName(),
                 'limit' => 20,
                 'limit_min' => 0,
@@ -82,14 +82,14 @@ class ListFactory
                 'filters_param' => 'search',
                 'state_provider' => ListStateProvider::class,
                 'state_persist' => false,
-            ))
-            ->setAllowedTypes('limit', array('int'))
-            ->setAllowedTypes('limit_min', array('int'))
-            ->setAllowedTypes('limit_max', array('int'))
-            ->setAllowedTypes('limit_param', array('string', 'null'))
-            ->setAllowedTypes('page_param', array('string', 'null'))
-            ->setAllowedTypes('filters_param', array('string', 'null'))
-            ->setAllowedTypes('sorter_param', array('string', 'null'))
+            ])
+            ->setAllowedTypes('limit', ['int'])
+            ->setAllowedTypes('limit_min', ['int'])
+            ->setAllowedTypes('limit_max', ['int'])
+            ->setAllowedTypes('limit_param', ['string', 'null'])
+            ->setAllowedTypes('page_param', ['string', 'null'])
+            ->setAllowedTypes('filters_param', ['string', 'null'])
+            ->setAllowedTypes('sorter_param', ['string', 'null'])
             ->setAllowedValues('limit', static function ($value) {
                 return $value >= 0;
             })

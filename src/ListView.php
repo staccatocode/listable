@@ -16,18 +16,18 @@ class ListView implements \ArrayAccess, \IteratorAggregate, \Countable, \JsonSer
     /**
      * @var array
      */
-    public $vars = array(
-        'data' => array(),
-        'pagination' => array(
+    public $vars = [
+        'data' => [],
+        'pagination' => [
             'count' => 0,
             'total' => 0,
             'pages' => 0,
             'page' => 0,
             'limit' => 0,
-        ),
-        'config' => array(),
-        'state' => array(),
-    );
+        ],
+        'config' => [],
+        'state' => [],
+    ];
 
     /**
      * Returns a data offset (implements \ArrayAccess).

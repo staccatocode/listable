@@ -16,7 +16,7 @@ interface ListBuilderInterface extends ListConfigBuilderInterface
     /**
      * Add element (filter, field) to builder.
      */
-    public function add(string $name, string $type, array $options = array()): self;
+    public function add(string $name, string $type, array $options = []): self;
 
     /**
      * Check if builder already has element (filter, field).

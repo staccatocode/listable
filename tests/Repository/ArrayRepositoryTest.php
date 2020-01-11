@@ -35,9 +35,9 @@ class ArrayRepositoryTest extends TestCase
     public function testCreate(): void
     {
         $repository = new ArrayRepository();
-        $repository->setOptions(array(
-            'data' => array(),
-        ));
+        $repository->setOptions([
+            'data' => [],
+        ]);
 
         $this->assertInstanceOf(AbstractRepository::class, $repository);
     }
@@ -57,14 +57,14 @@ class ArrayRepositoryTest extends TestCase
         ;
 
         $repository = new ArrayRepository();
-        $repository->setOptions(array(
+        $repository->setOptions([
             'data' => $data,
-        ));
+        ]);
 
         $result = $repository->getResult($this->state);
 
         $this->assertEquals(100, $result->getTotalCount());
-        $this->assertSame(array(array('a' => 'Test 0', 'b' => 1)), $result->getRows());
+        $this->assertSame([['a' => 'Test 0', 'b' => 1]], $result->getRows());
     }
 
     public function testFilterResult(): void
@@ -83,25 +83,25 @@ class ArrayRepositoryTest extends TestCase
 
         $this->state
             ->method('getFilters')
-            ->willReturn(array('a' => 'test 9', 'b' => '100'))
+            ->willReturn(['a' => 'test 9', 'b' => '100'])
         ;
 
         $repository = new ArrayRepository();
-        $repository->setOptions(array(
+        $repository->setOptions([
             'data' => $data,
-        ));
+        ]);
 
         $result = $repository->getResult($this->state);
 
         $this->assertEquals(1, $result->getTotalCount());
-        $this->assertSame(array(array('a' => 'Test 99', 'b' => 100)), $result->getRows());
+        $this->assertSame([['a' => 'Test 99', 'b' => 100]], $result->getRows());
 
-        $repository->setOptions(array(
+        $repository->setOptions([
             'data' => $data,
             'filter' => static function (array &$rows, ListStateInterface $state) {
                 return \array_slice($rows, 0, 50);
             },
-        ));
+        ]);
 
         $result = $repository->getResult($this->state);
 
@@ -125,40 +125,40 @@ class ArrayRepositoryTest extends TestCase
 
         $this->state
             ->method('getSorter')
-            ->willReturn(array('a' => 'Desc'))
+            ->willReturn(['a' => 'Desc'])
         ;
 
         $repository = new ArrayRepository();
-        $repository->setOptions(array(
+        $repository->setOptions([
             'data' => $data,
-        ));
+        ]);
 
         $result = $repository->getResult($this->state);
 
         $this->assertEquals(100, $result->getTotalCount());
-        $this->assertSame(array(array('a' => 'Test 99', 'b' => 100)), $result->getRows());
+        $this->assertSame([['a' => 'Test 99', 'b' => 100]], $result->getRows());
 
-        $repository->setOptions(array(
+        $repository->setOptions([
             'data' => $data,
             'sort' => static function (array &$rows, ListStateInterface $state) {
                 return $rows;
             },
-        ));
+        ]);
 
         $result = $repository->getResult($this->state);
 
         $this->assertEquals(100, $result->getTotalCount());
-        $this->assertSame(array(array('a' => 'Test 0', 'b' => 1)), $result->getRows());
+        $this->assertSame([['a' => 'Test 0', 'b' => 1]], $result->getRows());
     }
 
     private function prepareTestData(int $length = 100): array
     {
-        $data = array();
+        $data = [];
         for ($i = 0; $i < $length; ++$i) {
-            $data[$i] = array(
+            $data[$i] = [
                 'a' => 'Test ' . $i,
                 'b' => $i + 1,
-            );
+            ];
         }
 
         return $data;

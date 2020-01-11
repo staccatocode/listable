@@ -87,10 +87,10 @@ class ListRequestTest extends TestCase
      */
     public function testGetFilters(): void
     {
-        $testFilters = array(
+        $testFilters = [
             'filter' => 'value',
-            'multiple' => array('a', 'b'),
-        );
+            'multiple' => ['a', 'b'],
+        ];
 
         $listRequest = $this->createListRequest();
 
@@ -100,7 +100,7 @@ class ListRequestTest extends TestCase
             ->will($this->onConsecutiveCalls($testFilters, 'invalid'));
 
         $this->assertSame($testFilters, $listRequest->getFilters('list'));
-        $this->assertSame(array(), $listRequest->getFilters('list'));
+        $this->assertSame([], $listRequest->getFilters('list'));
     }
 
     /**
@@ -108,14 +108,14 @@ class ListRequestTest extends TestCase
      */
     public function testGetSorter(): void
     {
-        $testSorter = array(
+        $testSorter = [
             'name' => 'asc',
             'created' => 'desc',
-        );
+        ];
 
-        $testInvalidSorter = array(
-            'invalid' => array('asc'),
-        );
+        $testInvalidSorter = [
+            'invalid' => ['asc'],
+        ];
 
         $listRequest = $this->createListRequest();
 
@@ -125,7 +125,7 @@ class ListRequestTest extends TestCase
             ->will($this->onConsecutiveCalls($testSorter + $testInvalidSorter, 'invalid'));
 
         $this->assertSame($testSorter, $listRequest->getSorter('order'));
-        $this->assertSame(array(), $listRequest->getSorter('order'));
+        $this->assertSame([], $listRequest->getSorter('order'));
     }
 
     protected function createListRequest(): ListRequest

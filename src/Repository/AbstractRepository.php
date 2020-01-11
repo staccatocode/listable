@@ -19,7 +19,7 @@ abstract class AbstractRepository
     /**
      * @var array
      */
-    protected $options = array();
+    protected $options = [];
 
     public function setOptions(array $options): self
     {

@@ -62,7 +62,7 @@ interface ListConfigBuilderInterface extends ListConfigInterface
      * @param string|null $name    query parameter name
      * @param array       $options min and max option
      */
-    public function setLimitParam(?string $name, array $options = array()): self;
+    public function setLimitParam(?string $name, array $options = []): self;
 
     /**
      * Sets if list should persist its state.
@@ -72,7 +72,7 @@ interface ListConfigBuilderInterface extends ListConfigInterface
     /**
      * Sets list repository.
      */
-    public function setRepository(string $repositoryClass, array $options = array()): self;
+    public function setRepository(string $repositoryClass, array $options = []): self;
 
     /**
      * Sets state provider.

@@ -30,7 +30,7 @@ class TextFilterTest extends TestCase
     public function testIsValid(): void
     {
         $filter = new TextFilter();
-        $this->assertFalse($filter->isValid(array()));
+        $this->assertFalse($filter->isValid([]));
         $this->assertFalse($filter->isValid(1));
         $this->assertFalse($filter->isValid(null));
         $this->assertTrue($filter->isValid('test'));

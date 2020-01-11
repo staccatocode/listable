@@ -27,7 +27,7 @@ class ListRegistry implements ListRegistryInterface
      *
      * @param ServiceLocator[] $locators
      */
-    public function __construct(array $locators = array())
+    public function __construct(array $locators = [])
     {
         $this->locators = $locators;
     }
@@ -67,7 +67,7 @@ class ListRegistry implements ListRegistryInterface
     /**
      * {@inheritdoc}
      */
-    public function getRepository(string $name, array $options = array()): AbstractRepository
+    public function getRepository(string $name, array $options = []): AbstractRepository
     {
         return $this->getInstance($name, AbstractRepository::class)->setOptions($options);
     }

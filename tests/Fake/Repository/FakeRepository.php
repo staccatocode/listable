@@ -35,10 +35,10 @@ class FakeRepository extends AbstractRepository
     protected function configureOptions(OptionsResolver $resolver): void
     {
         $resolver
-            ->setDefaults(array(
-                'data' => array(),
-            ))
-            ->setAllowedTypes('data', array('array'))
+            ->setDefaults([
+                'data' => [],
+            ])
+            ->setAllowedTypes('data', ['array'])
         ;
     }
 }

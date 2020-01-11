@@ -36,7 +36,7 @@ class ListConfigBuilder implements ListConfigBuilderInterface, \JsonSerializable
     /**
      * @var array
      */
-    private $options = array();
+    private $options = [];
 
     /**
      * @var int
@@ -56,7 +56,7 @@ class ListConfigBuilder implements ListConfigBuilderInterface, \JsonSerializable
     /**
      * @var array
      */
-    private $sorter = array();
+    private $sorter = [];
 
     /**
      * @var string|null
@@ -71,12 +71,12 @@ class ListConfigBuilder implements ListConfigBuilderInterface, \JsonSerializable
     /**
      * @var array
      */
-    private $limitParamOptions = array();
+    private $limitParamOptions = [];
 
     /**
      * @var AbstractFilter[]
      */
-    private $filters = array();
+    private $filters = [];
 
     /**
      * @var string|null
@@ -86,7 +86,7 @@ class ListConfigBuilder implements ListConfigBuilderInterface, \JsonSerializable
     /**
      * @var AbstractField[]
      */
-    private $fields = array();
+    private $fields = [];
 
     /**
      * @var string
@@ -259,16 +259,16 @@ class ListConfigBuilder implements ListConfigBuilderInterface, \JsonSerializable
     /**
      * {@inheritdoc}
      */
-    public function setLimitParam(?string $name, array $options = array()): ListConfigBuilderInterface
+    public function setLimitParam(?string $name, array $options = []): ListConfigBuilderInterface
     {
         $resolver = new OptionsResolver();
         $resolver
-            ->setDefaults(array(
+            ->setDefaults([
                 'min' => null,
                 'max' => null,
-            ))
-            ->setAllowedTypes('min', array('int', 'null'))
-            ->setAllowedTypes('max', array('int', 'null'))
+            ])
+            ->setAllowedTypes('min', ['int', 'null'])
+            ->setAllowedTypes('max', ['int', 'null'])
         ;
 
         $this->limitParam = (string) $name;
@@ -283,7 +283,7 @@ class ListConfigBuilder implements ListConfigBuilderInterface, \JsonSerializable
     public function setSorter(?string $name, ?string $type): ListConfigBuilderInterface
     {
         if (null === $name) {
-            $this->sorter = array();
+            $this->sorter = [];
         } elseif (null === $type) {
             unset($this->sorter[$name]);
         } else {
@@ -304,7 +304,7 @@ class ListConfigBuilder implements ListConfigBuilderInterface, \JsonSerializable
     /**
      * {@inheritdoc}
      */
-    public function setFilter(string $name, string $type, array $options = array()): ListConfigBuilderInterface
+    public function setFilter(string $name, string $type, array $options = []): ListConfigBuilderInterface
     {
         $filter = $this->registry->getFilterType($type)->setOptions($options);
 
@@ -316,12 +316,12 @@ class ListConfigBuilder implements ListConfigBuilderInterface, \JsonSerializable
     /**
      * {@inheritdoc}
      */
-    public function setField(string $name, string $type, array $options = array()): ListConfigBuilderInterface
+    public function setField(string $name, string $type, array $options = []): ListConfigBuilderInterface
     {
         $field = $this->registry->getFieldType($type)->setOptions($options);
 
         if ($field->hasFilter()) {
-            $this->setFilter($name, $field->getFilter(), array('field' => $name) + $field->getFilterOptions());
+            $this->setFilter($name, $field->getFilter(), ['field' => $name] + $field->getFilterOptions());
         }
 
         $this->fields[$name] = $field;
@@ -392,7 +392,7 @@ class ListConfigBuilder implements ListConfigBuilderInterface, \JsonSerializable
     /**
      * {@inheritdoc}
      */
-    public function setRepository(string $repositoryClass, array $options = array()): ListConfigBuilderInterface
+    public function setRepository(string $repositoryClass, array $options = []): ListConfigBuilderInterface
     {
         $this->repository = $this->registry->getRepository($repositoryClass, $options);
 
@@ -430,8 +430,8 @@ class ListConfigBuilder implements ListConfigBuilderInterface, \JsonSerializable
      */
     public function jsonSerialize()
     {
-        $fields = array();
-        $filters = array();
+        $fields = [];
+        $filters = [];
 
         foreach ($this->getFilters() as $key => $filter) {
             $filters[$key] = $filter->getOptions();
@@ -441,7 +441,7 @@ class ListConfigBuilder implements ListConfigBuilderInterface, \JsonSerializable
             $fields[$key] = $field->getOptions();
         }
 
-        return array(
+        return [
             'name' => $this->getName(),
             'persist_state' => $this->getPersistState(),
             'page_param' => $this->getPageParam(),
@@ -450,6 +450,6 @@ class ListConfigBuilder implements ListConfigBuilderInterface, \JsonSerializable
             'filters_param' => $this->getFiltersParam(),
             'fields' => $fields,
             'filters' => $filters,
-        );
+        ];
     }
 }

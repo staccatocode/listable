@@ -57,11 +57,11 @@ class ListStateProviderTest extends TestCase
 
     public function testGetState(): void
     {
-        $filters = array(
+        $filters = [
             'a' => 1,
             'b' => 'x',
-            'c' => array(1, 2, 3),
-        );
+            'c' => [1, 2, 3],
+        ];
 
         $filter = $this->getMockBuilder(TextFilter::class)->getMock();
         $filter
@@ -76,9 +76,9 @@ class ListStateProviderTest extends TestCase
 
         $this->config
             ->method('getFilters')
-            ->willReturn(array(
+            ->willReturn([
                 'b' => $filter,
-            ))
+            ])
         ;
 
         $this->request
@@ -92,16 +92,16 @@ class ListStateProviderTest extends TestCase
 
     public function testGetPersistedState(): void
     {
-        $sessionData = array(
+        $sessionData = [
             'page' => 10,
             'limit' => 15,
-            'filters' => array(
+            'filters' => [
                 'x' => '1',
-            ),
-            'sorter' => array(
+            ],
+            'sorter' => [
                 'y' => 'asc',
-            ),
-        );
+            ],
+        ];
 
         $filter = $this->getMockBuilder(AbstractFilter::class)->getMock();
         $filter
@@ -113,9 +113,9 @@ class ListStateProviderTest extends TestCase
         $this->config->method('getName')->willReturn('test');
         $this->config->method('getPageParam')->willReturn('page');
         $this->config->method('getLimitParam')->willReturn('limit');
-        $this->config->method('getFilters')->willReturn(array(
+        $this->config->method('getFilters')->willReturn([
             'x' => $filter,
-        ));
+        ]);
 
         $this->session
             ->method('get')

@@ -33,18 +33,18 @@ class AbstractFilterTest extends TestCase
         $this->assertFalse($filter->hasField());
         $this->assertNull($filter->getData());
         $this->assertSame('', $filter->getLabel());
-        $this->assertSame(array(), $filter->getOptions());
+        $this->assertSame([], $filter->getOptions());
 
         $type = explode('\\', \get_class($filter));
         $type = array_pop($type);
-        $options = array(
+        $options = [
             'data' => 'data',
             'visible' => true,
             'locked' => true,
             'label' => 'label',
             'type' => $type,
             'field' => 'test',
-        );
+        ];
 
         $filter->setOptions($options);
 

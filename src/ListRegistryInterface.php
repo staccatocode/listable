@@ -56,7 +56,7 @@ interface ListRegistryInterface
      *
      * @throws InvalidArgumentException in case of invalid type name passed
      */
-    public function getRepository(string $name, array $options = array()): AbstractRepository;
+    public function getRepository(string $name, array $options = []): AbstractRepository;
 
     /**
      * Returns instance of state provider by class name or alias.

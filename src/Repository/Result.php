@@ -16,7 +16,7 @@ class Result
     /**
      * @var array
      */
-    private $rows = array();
+    private $rows = [];
 
     /**
      * @var int

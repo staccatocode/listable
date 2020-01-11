@@ -34,8 +34,8 @@ class ResultTest extends TestCase
         $result->setTotalCount(10);
         $this->assertSame(10, $result->getTotalCount());
 
-        $this->assertSame(array(), $result->getRows());
-        $result->setRows(array(1, 2, 3));
-        $this->assertSame(array(1, 2, 3), $result->getRows());
+        $this->assertSame([], $result->getRows());
+        $result->setRows([1, 2, 3]);
+        $this->assertSame([1, 2, 3], $result->getRows());
     }
 }

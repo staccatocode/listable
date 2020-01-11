@@ -18,7 +18,7 @@ abstract class AbstractField
     /**
      * @var array
      */
-    private $options = array();
+    private $options = [];
 
     /**
      * @return $this
@@ -28,21 +28,21 @@ abstract class AbstractField
         $type = explode('\\', static::class);
         $resolver = new OptionsResolver();
         $resolver
-            ->setDefaults(array(
+            ->setDefaults([
                 'filter' => null,
-                'filter_options' => array(),
+                'filter_options' => [],
                 'type' => array_pop($type),
                 'visible' => true,
                 'property_path' => null,
                 'normalize' => null,
                 'render' => null,
-            ))
-            ->setAllowedTypes('filter', array('string', 'null'))
+            ])
+            ->setAllowedTypes('filter', ['string', 'null'])
             ->setAllowedTypes('filter_options', 'array')
             ->setAllowedTypes('visible', 'bool')
-            ->setAllowedTypes('property_path', array('null', 'string'))
-            ->setAllowedTypes('normalize', array('null', 'closure'))
-            ->setAllowedTypes('render', array('null', 'closure'))
+            ->setAllowedTypes('property_path', ['null', 'string'])
+            ->setAllowedTypes('normalize', ['null', 'closure'])
+            ->setAllowedTypes('render', ['null', 'closure'])
         ;
 
         $this->configureOptions($resolver);

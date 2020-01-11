@@ -18,7 +18,7 @@ abstract class AbstractFilter
     /**
      * @var array
      */
-    private $options = array();
+    private $options = [];
 
     /**
      * @return $this
@@ -29,15 +29,15 @@ abstract class AbstractFilter
 
         $resolver = new OptionsResolver();
         $resolver
-            ->setDefaults(array(
+            ->setDefaults([
                 'data' => null,
                 'field' => null,
                 'label' => '',
                 'visible' => true,
                 'locked' => false,
                 'type' => array_pop($type),
-            ))
-            ->setAllowedTypes('field', array('string', 'null'))
+            ])
+            ->setAllowedTypes('field', ['string', 'null'])
             ->setAllowedTypes('label', 'string')
             ->setAllowedTypes('visible', 'bool')
             ->setAllowedTypes('locked', 'bool')

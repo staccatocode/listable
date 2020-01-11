@@ -26,7 +26,7 @@ class Listable implements ListInterface
     /**
      * @var iterable
      */
-    private $data = array();
+    private $data = [];
 
     /**
      * @var int

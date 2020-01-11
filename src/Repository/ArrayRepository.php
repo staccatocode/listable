@@ -38,14 +38,14 @@ class ArrayRepository extends AbstractRepository
     protected function configureOptions(OptionsResolver $resolver): void
     {
         $resolver
-            ->setDefaults(array(
-                'data' => array(),
+            ->setDefaults([
+                'data' => [],
                 'filter' => null,
                 'sort' => null,
-            ))
-            ->setAllowedTypes('data', array('array'))
-            ->setAllowedTypes('sort', array('closure', 'null'))
-            ->setAllowedTypes('filter', array('closure', 'null'))
+            ])
+            ->setAllowedTypes('data', ['array'])
+            ->setAllowedTypes('sort', ['closure', 'null'])
+            ->setAllowedTypes('filter', ['closure', 'null'])
         ;
     }
 

@@ -85,9 +85,9 @@ class ListableTest extends TestCase
 
         $this->assertSame($this->state, $list->getState());
         $this->assertSame($this->config, $list->getConfig());
-        $this->assertSame(array(), $list->getData());
-        $list->setData(array(1, 2, 3));
-        $this->assertSame(array(1, 2, 3), $list->getData());
+        $this->assertSame([], $list->getData());
+        $list->setData([1, 2, 3]);
+        $this->assertSame([1, 2, 3], $list->getData());
     }
 
     /**

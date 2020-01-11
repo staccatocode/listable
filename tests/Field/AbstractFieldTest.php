@@ -32,26 +32,26 @@ class AbstractFieldTest extends TestCase
 
         $type = explode('\\', \get_class($field));
         $type = array_pop($type);
-        $options = array(
+        $options = [
             'property_path' => 'test',
             'visible' => true,
             'type' => $type,
             'filter' => 'test',
-            'filter_options' => array('a' => 1),
+            'filter_options' => ['a' => 1],
             'render' => function () {
                 return null;
             },
             'normalize' => function () {
                 return null;
             },
-        );
+        ];
 
         $field->setOptions($options);
 
         $this->assertTrue($field->isVisible());
         $this->assertSame('test', $field->getPropertyPath());
         $this->assertSame('test', $field->getFilter());
-        $this->assertSame(array('a' => 1), $field->getFilterOptions());
+        $this->assertSame(['a' => 1], $field->getFilterOptions());
         $this->assertSame($type, $field->getType());
         $this->assertEquals($options, $field->getOptions());
     }
@@ -63,14 +63,14 @@ class AbstractFieldTest extends TestCase
 
         $value = new \DateTime('2020-01-01');
 
-        $field->setOptions(array(
+        $field->setOptions([
             'normalize' => function (\DateTime $value) {
                 return $value->format('Y-m-d');
             },
             'render' => function (string $value) {
                 return $value . '-render';
             },
-        ));
+        ]);
 
         $this->assertSame('2020-01-01', $field->normalize($value, $this));
         $this->assertSame('2020-01-01-render', $field->render('2020-01-01', $this));

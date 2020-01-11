@@ -19,12 +19,12 @@ use Symfony\Component\PropertyAccess\PropertyAccessor;
 class ListBuilder extends ListConfigBuilder implements ListBuilderInterface
 {
     /** @var array */
-    private $elements = array();
+    private $elements = [];
 
     /**
      * {@inheritdoc}
      */
-    public function add(string $name, string $type, array $options = array()): ListBuilderInterface
+    public function add(string $name, string $type, array $options = []): ListBuilderInterface
     {
         $this->elements[$name] = [$type, $options];
 
@@ -36,7 +36,7 @@ class ListBuilder extends ListConfigBuilder implements ListBuilderInterface
      */
     public function has(string $name): bool
     {
-        return array_key_exists($name, $this->elements);
+        return \array_key_exists($name, $this->elements);
     }
 
     /**
@@ -91,7 +91,7 @@ class ListBuilder extends ListConfigBuilder implements ListBuilderInterface
         return $list;
     }
 
-    private function getState()
+    private function getState(): ListState
     {
         $state = $this->registry->getStateProvider($this->getStateProvider())->getState($this);
 
@@ -107,9 +107,9 @@ class ListBuilder extends ListConfigBuilder implements ListBuilderInterface
     private function getDataFromResult(Result $result): array
     {
         $propertyAccessor = new PropertyAccessor();
-        $data = array();
+        $data = [];
         foreach ($result->getRows() as $item) {
-            $row = array();
+            $row = [];
             $propertyPathFormat = \is_array($item) || $item instanceof \ArrayAccess ? '[%s]' : '%s';
             foreach ($this->getFields() as $name => $field) {
                 try {

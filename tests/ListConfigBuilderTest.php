@@ -68,28 +68,28 @@ class ListConfigBuilderTest extends TestCase
         $this->assertSame('', $builder->getLimitParam());
         $builder->setLimitParam('test_limit');
         $this->assertSame('test_limit', $builder->getLimitParam());
-        $this->assertEquals(array('min' => null, 'max' => null), $builder->getLimitParamOptions());
+        $this->assertEquals(['min' => null, 'max' => null], $builder->getLimitParamOptions());
 
         $this->assertSame(0, $builder->getLimit());
         $builder->setLimit(15);
         $this->assertSame(15, $builder->getLimit());
 
-        $builder->setLimitParam('test_limit', array('min' => 5, 'max' => 10));
+        $builder->setLimitParam('test_limit', ['min' => 5, 'max' => 10]);
         $this->assertSame(10, $builder->getLimit());
-        $this->assertEquals(array('min' => 5, 'max' => 10), $builder->getLimitParamOptions());
+        $this->assertEquals(['min' => 5, 'max' => 10], $builder->getLimitParamOptions());
         $builder->setLimit(0);
         $this->assertSame(5, $builder->getLimit());
 
-        $this->assertSame(array(), $builder->getSorter());
+        $this->assertSame([], $builder->getSorter());
         $builder->setSorter('test', 'desc');
         $builder->setSorter('name', 'asc');
-        $this->assertSame(array('test' => 'desc', 'name' => 'asc'), $builder->getSorter());
+        $this->assertSame(['test' => 'desc', 'name' => 'asc'], $builder->getSorter());
 
         $builder->setSorter('test', null);
-        $this->assertSame(array('name' => 'asc'), $builder->getSorter());
+        $this->assertSame(['name' => 'asc'], $builder->getSorter());
 
         $builder->setSorter(null, null);
-        $this->assertSame(array(), $builder->getSorter());
+        $this->assertSame([], $builder->getSorter());
 
         $this->assertSame('', $builder->getSorterParam());
         $builder->setSorterParam('test_sorter');
@@ -104,8 +104,8 @@ class ListConfigBuilderTest extends TestCase
         $this->assertTrue($builder->getPersistState());
 
         $this->assertEmpty($builder->getOptions());
-        $builder->setOptions(array('a' => 1));
-        $this->assertSame(array('a' => 1), $builder->getOptions());
+        $builder->setOptions(['a' => 1]);
+        $this->assertSame(['a' => 1], $builder->getOptions());
 
         $type = $this->getMockBuilder(ListTypeInterface::class)->getMock();
         $this->assertNull($builder->getType());
@@ -119,7 +119,7 @@ class ListConfigBuilderTest extends TestCase
     {
         $builder = new ListConfigBuilder($this->registry);
 
-        $mockRepositoryOptions = array('a' => 1, 'b' => false);
+        $mockRepositoryOptions = ['a' => 1, 'b' => false];
         $mockRepository = $this->getMockBuilder(AbstractRepository::class)->getMock();
         $mockRepository->method('setOptions')
             ->with($mockRepositoryOptions)
@@ -141,7 +141,7 @@ class ListConfigBuilderTest extends TestCase
     {
         $builder = new ListConfigBuilder($this->registry);
 
-        $filterOptions = array('a' => 1, 'b' => true, 'c' => 'value');
+        $filterOptions = ['a' => 1, 'b' => true, 'c' => 'value'];
 
         $mockFilter = $this->getMockBuilder(AbstractFilter::class)->getMock();
         $mockFilter
@@ -156,16 +156,16 @@ class ListConfigBuilderTest extends TestCase
             ->willReturn($mockFilter)
         ;
 
-        $this->assertSame(array(), $builder->getFilters());
+        $this->assertSame([], $builder->getFilters());
         $builder->setFilter('test', 'mockFilter', $filterOptions);
-        $this->assertSame(array('test' => $mockFilter), $builder->getFilters());
+        $this->assertSame(['test' => $mockFilter], $builder->getFilters());
     }
 
     public function testSetField(): void
     {
         $builder = new ListConfigBuilder($this->registry);
 
-        $fieldOptions = array('a' => 1, 'b' => true, 'c' => 'value', 'filter' => 'test_filter');
+        $fieldOptions = ['a' => 1, 'b' => true, 'c' => 'value', 'filter' => 'test_filter'];
 
         $mockField = $this->getMockBuilder(AbstractField::class)->getMock();
         $mockField
@@ -198,8 +198,8 @@ class ListConfigBuilderTest extends TestCase
             ->willReturn($mockFilter)
         ;
 
-        $this->assertSame(array(), $builder->getFields());
+        $this->assertSame([], $builder->getFields());
         $builder->setField('test', 'mockField', $fieldOptions);
-        $this->assertSame(array('test' => $mockField), $builder->getFields());
+        $this->assertSame(['test' => $mockField], $builder->getFields());
     }
 }

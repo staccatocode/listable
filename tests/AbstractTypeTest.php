@@ -32,8 +32,8 @@ class AbstractTypeTest extends TestCase
         };
 
         $type->configureOptions($optionsResolver);
-        $type->buildList($listBuilder, array());
-        $type->buildView($mockList->createView(), $mockList, array());
+        $type->buildList($listBuilder, []);
+        $type->buildView($mockList->createView(), $mockList, []);
 
         $this->assertInstanceOf(AbstractType::class, $type);
         $this->assertInstanceOf(ListTypeInterface::class, $type);
