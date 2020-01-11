@@ -150,6 +150,28 @@ class ListBuilderTest extends TestCase
         $this->assertInstanceOf(ListInterface::class, $list);
     }
 
+    public function testFieldPropertyPath()
+    {
+        $builder = new ListBuilder(new ListRegistry());
+        $builder->setRepository(FakeRepository::class, array('data' => array(
+            array('a' => 1, 'b' => new \stdClass()),
+            array('a' => 2, 'b' => new \stdClass()),
+        )));
+        $builder->add('a', TextField::class);
+        $builder->add('b', TextField::class, array(
+            'property_path' => '[a]',
+        ));
+        $builder->add('c', TextField::class, array(
+            'property_path' => '[b].test',
+        ));
+        $list = $builder->getList();
+
+        $this->assertEquals(array(
+            array('a' => 1, 'b' => 1, 'c' => null),
+            array('a' => 2, 'b' => 2, 'c' => null),
+        ), $list->getData());
+    }
+
     /**
      * @covers \Staccato\Component\Listable\ListConfigBuilder::jsonSerialize
      */

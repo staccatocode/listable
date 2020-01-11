@@ -13,6 +13,7 @@ namespace Staccato\Component\Listable;
 
 use Staccato\Component\Listable\Exception\InvalidArgumentException;
 use Staccato\Component\Listable\Repository\Result;
+use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 class ListBuilder extends ListConfigBuilder implements ListBuilderInterface
@@ -111,8 +112,14 @@ class ListBuilder extends ListConfigBuilder implements ListBuilderInterface
             $row = array();
             $propertyPathFormat = \is_array($item) || $item instanceof \ArrayAccess ? '[%s]' : '%s';
             foreach ($this->getFields() as $name => $field) {
-                $propertyPath = $field->getPropertyPath() ?? sprintf($propertyPathFormat, $name);
-                $row[$name] = $propertyAccessor->getValue($item, $propertyPath);
+                try {
+                    $propertyPath = $field->getPropertyPath() ?? sprintf($propertyPathFormat, $name);
+                    $value = $propertyAccessor->getValue($item, $propertyPath);
+                    $value = $field->normalize($value, $item);
+                } catch (NoSuchPropertyException $e) {
+                    $value = null;
+                }
+                $row[$name] = $field->render($value, $item);
             }
             $data[] = $row;
         }

@@ -38,6 +38,12 @@ class AbstractFieldTest extends TestCase
             'type' => $type,
             'filter' => 'test',
             'filter_options' => array('a' => 1),
+            'render' => function () {
+                return null;
+            },
+            'normalize' => function () {
+                return null;
+            },
         );
 
         $field->setOptions($options);
@@ -48,5 +54,25 @@ class AbstractFieldTest extends TestCase
         $this->assertSame(array('a' => 1), $field->getFilterOptions());
         $this->assertSame($type, $field->getType());
         $this->assertEquals($options, $field->getOptions());
+    }
+
+    public function testNormalizeAndRenderValue()
+    {
+        $field = new class() extends AbstractField {
+        };
+
+        $value = new \DateTime('2020-01-01');
+
+        $field->setOptions(array(
+            'normalize' => function (\DateTime $value) {
+                return $value->format('Y-m-d');
+            },
+            'render' => function (string $value) {
+                return $value . '-render';
+            },
+        ));
+
+        $this->assertSame('2020-01-01', $field->normalize($value, $this));
+        $this->assertSame('2020-01-01-render', $field->render('2020-01-01', $this));
     }
 }

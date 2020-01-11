@@ -34,12 +34,15 @@ abstract class AbstractField
                 'type' => array_pop($type),
                 'visible' => true,
                 'property_path' => null,
+                'normalize' => null,
+                'render' => null,
             ))
             ->setAllowedTypes('filter', array('string', 'null'))
             ->setAllowedTypes('filter_options', 'array')
             ->setAllowedTypes('visible', 'bool')
             ->setAllowedTypes('property_path', array('null', 'string'))
-            ->setAllowedTypes('property_path', array('null', 'string'))
+            ->setAllowedTypes('normalize', array('null', 'closure'))
+            ->setAllowedTypes('render', array('null', 'closure'))
         ;
 
         $this->configureOptions($resolver);
@@ -90,6 +93,20 @@ abstract class AbstractField
     public function getType(): string
     {
         return (string) $this->getOption('type');
+    }
+
+    public function normalize($value, $context)
+    {
+        $callback = $this->getOption('normalize');
+
+        return $callback instanceof \Closure ? $callback->call($this, $value, $context) : $value;
+    }
+
+    public function render($value, $context)
+    {
+        $callback = $this->getOption('render');
+
+        return $callback instanceof \Closure ? $callback->call($this, $value, $context) : $value;
     }
 
     protected function configureOptions(OptionsResolver $resolver): void
