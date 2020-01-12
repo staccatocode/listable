@@ -13,7 +13,7 @@ namespace Staccato\Component\Listable;
 
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class ListFactory
+class ListFactory implements ListFactoryInterface
 {
     /**
      * @var ListRegistryInterface
