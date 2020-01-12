@@ -11,7 +11,7 @@
 
 namespace Staccato\Component\Listable;
 
-class Listable implements ListInterface
+class Listable implements ListInterface, \JsonSerializable
 {
     /**
      * @var ListConfigInterface
@@ -151,5 +151,10 @@ class Listable implements ListInterface
     public function checkPageOverflow(): bool
     {
         return $this->getState()->getPage() > 0 && $this->getState()->getPage() > $this->getPage();
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->createView();
     }
 }

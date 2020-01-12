@@ -126,4 +126,21 @@ class ListableTest extends TestCase
         $this->assertArrayHasKey('page', $listView->vars['pagination']);
         $this->assertArrayHasKey('limit', $listView->vars['pagination']);
     }
+
+    public function testJsonSerialize(): void
+    {
+        $mockType = $this->getMockBuilder(ListTypeInterface::class)->getMock();
+        $mockType
+            ->expects($this->once())
+            ->method('buildView')
+        ;
+
+        $this->config
+            ->method('getType')
+            ->willReturn($mockType);
+
+        $list = new Listable($this->config, $this->state);
+
+        $this->assertJson(json_encode($list));
+    }
 }

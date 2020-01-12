@@ -18,8 +18,6 @@ interface ListFactoryInterface
      *
      * @param string $listType class of list type
      * @param array  $options  options passed to list type
-     *
-     * @return ListInterface
      */
     public function create(string $listType, array $options = []): ListInterface;
 }
