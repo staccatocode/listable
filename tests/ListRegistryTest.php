@@ -48,7 +48,7 @@ class ListRegistryTest extends TestCase
             ListTypeInterface::class => new ServiceLocator([
                 FakeListType::class => static function () use ($mockListType) {
                     return $mockListType;
-                }, ],
+                }, ]
             ),
         ]);
 
@@ -66,7 +66,7 @@ class ListRegistryTest extends TestCase
             AbstractField::class => new ServiceLocator([
                 TextField::class => static function () use ($mockFieldType) {
                     return $mockFieldType;
-                }, ],
+                }, ]
             ),
         ]);
 
@@ -84,7 +84,7 @@ class ListRegistryTest extends TestCase
             AbstractFilter::class => new ServiceLocator([
                 TextFilter::class => static function () use ($mockFilterType) {
                     return $mockFilterType;
-                }, ],
+                }, ]
             ),
         ]);
 
@@ -102,7 +102,7 @@ class ListRegistryTest extends TestCase
             ListStateProviderInterface::class => new ServiceLocator([
                 ListStateProvider::class => static function () use ($mockStateProvider) {
                     return $mockStateProvider;
-                }, ],
+                }, ]
             ),
         ]);
 
@@ -126,7 +126,7 @@ class ListRegistryTest extends TestCase
             AbstractRepository::class => new ServiceLocator([
                 AbstractRepository::class => static function () use ($mockRepository) {
                     return $mockRepository;
-                }, ],
+                }, ]
             ),
         ]);
 
