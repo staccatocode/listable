@@ -11,6 +11,7 @@
 
 namespace Staccato\Component\Listable;
 
+use Staccato\Component\Listable\Helper\ArrayCleaner;
 use Symfony\Component\HttpFoundation\Request;
 
 class ListRequest implements ListRequestInterface
@@ -56,7 +57,7 @@ class ListRequest implements ListRequestInterface
     {
         $filters = $this->request->get($paramName, $defaultValue);
 
-        return \is_array($filters) ? $this->cleanFilters($filters) : [];
+        return \is_array($filters) ? ArrayCleaner::clean($filters) : [];
     }
 
     /**
@@ -82,32 +83,5 @@ class ListRequest implements ListRequestInterface
         }
 
         return $result;
-    }
-
-    /**
-     * Clean filters values.
-     * Trim white chars and unset empty filters.
-     *
-     * @param array $filters array of filters
-     */
-    private function cleanFilters(array $filters): array
-    {
-        array_walk_recursive($filters, static function (&$item) {
-            $item = trim($item);
-        });
-
-        $filters = array_filter($filters, static function (&$item) {
-            if (\is_array($item)) {
-                $item = array_filter($item, static function ($val) {
-                    return (bool) \strlen($val);
-                });
-
-                return !empty($item);
-            }
-
-            return \strlen($item);
-        });
-
-        return $filters;
     }
 }
