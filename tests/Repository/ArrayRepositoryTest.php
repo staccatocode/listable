@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Staccato\Component\Listable\Tests;
+namespace Staccato\Component\Listable\Tests\Repository;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -67,7 +67,40 @@ class ArrayRepositoryTest extends TestCase
         $this->assertSame([['a' => 'Test 0', 'b' => 1]], $result->getRows());
     }
 
-    public function testFilterResult(): void
+    /**
+     * @dataProvider stateFilterResultDataProvider
+     */
+    public function testStateFilterResult(array $filters, int $limit, array $expectedRows, int $expectedTotalCount): void
+    {
+        $data = $this->prepareTestData(100);
+
+        $this->state
+            ->method('getPage')
+            ->willReturn(0)
+        ;
+
+        $this->state
+            ->method('getLimit')
+            ->willReturn($limit)
+        ;
+
+        $this->state
+            ->method('getFilters')
+            ->willReturn($filters)
+        ;
+
+        $repository = new ArrayRepository();
+        $repository->setOptions([
+            'data' => $data,
+        ]);
+
+        $result = $repository->getResult($this->state);
+
+        $this->assertEquals($expectedTotalCount, $result->getTotalCount());
+        $this->assertSame($expectedRows, $result->getRows());
+    }
+
+    public function testOptionFilter(): void
     {
         $data = $this->prepareTestData(100);
 
@@ -83,19 +116,10 @@ class ArrayRepositoryTest extends TestCase
 
         $this->state
             ->method('getFilters')
-            ->willReturn(['a' => 'test 9', 'b' => '100'])
+            ->willReturn([null])
         ;
 
         $repository = new ArrayRepository();
-        $repository->setOptions([
-            'data' => $data,
-        ]);
-
-        $result = $repository->getResult($this->state);
-
-        $this->assertEquals(1, $result->getTotalCount());
-        $this->assertSame([['a' => 'Test 99', 'b' => 100]], $result->getRows());
-
         $repository->setOptions([
             'data' => $data,
             'filter' => static function (array &$rows, ListStateInterface $state) {
@@ -149,6 +173,27 @@ class ArrayRepositoryTest extends TestCase
 
         $this->assertEquals(100, $result->getTotalCount());
         $this->assertSame([['a' => 'Test 0', 'b' => 1]], $result->getRows());
+    }
+
+    public function stateFilterResultDataProvider(): array
+    {
+        return [
+            [
+                ['a' => 'test 9', 'b' => '100'],
+                1,
+                [['a' => 'Test 99', 'b' => 100]],
+                1,
+            ],
+            [
+                ['a' => 'test', 'b' => ['from' => '97', 'to' => '99']],
+                2,
+                [
+                    ['a' => 'Test 96', 'b' => 97],
+                    ['a' => 'Test 97', 'b' => 98],
+                ],
+                3,
+            ],
+        ];
     }
 
     private function prepareTestData(int $length = 100): array

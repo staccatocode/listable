@@ -60,13 +60,38 @@ class ArrayRepository extends AbstractRepository
         }
 
         $filters = $state->getFilters();
+
         $data = array_filter($data, static function ($row) use (&$filters) {
             foreach ($filters as $name => $filter) {
-                if (!\array_key_exists($name, $row) || false !== stripos((string) $row[$name], $filter)) {
+                if (!\array_key_exists($name, $row)) {
                     continue;
                 }
 
-                return false;
+                $v = $row[$name];
+
+                if (is_numeric($v)) {
+                    if (\is_array($filter)) {
+                        if (($from = $filter['from'] ?? false) && $from > $v) {
+                            return false;
+                        }
+
+                        if (($to = $filter['to'] ?? false) && $to < $v) {
+                            return false;
+                        }
+
+                        continue;
+                    }
+
+                    if ($v != $filter) {
+                        return false;
+                    }
+
+                    continue;
+                }
+
+                if (false === stripos((string) $v, $filter)) {
+                    return false;
+                }
             }
 
             return true;
