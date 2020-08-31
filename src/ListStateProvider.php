@@ -52,7 +52,7 @@ class ListStateProvider implements ListStateProviderInterface
         foreach ($config->getFilters() as $name => $filter) {
             $value = $filter->isLocked() ? $filter->getData() : ($requestFilters[$name] ?? $filter->getData());
             if ($value && $filter->isValid($value)) {
-                $filters[$name] = $requestFilters[$name];
+                $filters[$name] = $value;
             }
         }
 
